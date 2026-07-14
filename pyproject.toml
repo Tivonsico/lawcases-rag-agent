@@ -9,13 +9,14 @@ description = "Local legal case retrieval-augmented generation prototype"
 readme = "rag_agent/README.md"
 requires-python = ">=3.10,<3.14"
 dependencies = [
-  "chromadb>=0.4.22,<2",
-  "numpy>=1.24,<3",
-  "rank-bm25>=0.2.2,<1",
-  "requests>=2.28,<3",
-  "jieba>=0.42.1,<1",
-  "flask>=3.0,<4",
-]
+    "chromadb>=0.4.22,<2",
+    "numpy>=1.24,<3",
+    "rank-bm25>=0.2.2,<1",
+    "requests>=2.28,<3",
+    "jieba>=0.42.1,<1",
+    "flask>=3.0,<4",
+    "gunicorn>=22,<24",
+  ]
 
 [project.optional-dependencies]
 dev = ["pytest>=8,<9"]

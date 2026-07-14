@@ -6,4 +6,5 @@ rank-bm25>=0.2.2,<1
 requests>=2.28,<3
 jieba>=0.42.1,<1
 flask>=3.0,<4
+gunicorn>=22,<24
 
