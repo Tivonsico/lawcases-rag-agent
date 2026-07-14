@@ -1,0 +1,115 @@
+model = "gpt-5.6-sol"
+model_reasoning_effort = "medium"
+
+notify = [ "C:\\Users\\20463\\AppData\\Local\\OpenAI\\Codex\\runtimes\\cua_node\\ecfc0d9aa02807e3\\bin\\node_modules\\@oai\\sky\\bin\\windows\\codex-computer-use.exe", "turn-ended" ]
+
+[marketplaces.openai-bundled]
+last_updated = "2026-07-12T15:39:12Z"
+source_type = "local"
+source = '\\?\C:\Users\20463\.codex\.tmp\bundled-marketplaces\openai-bundled'
+
+[marketplaces.openai-primary-runtime]
+last_updated = "2026-07-12T10:45:44Z"
+source_type = "local"
+source = '\\?\C:\Users\20463\.cache\codex-runtimes\codex-primary-runtime\plugins\openai-primary-runtime'
+
+[plugins."documents@openai-primary-runtime"]
+enabled = true
+
+[plugins."pdf@openai-primary-runtime"]
+enabled = true
+
+[plugins."spreadsheets@openai-primary-runtime"]
+enabled = true
+
+[plugins."presentations@openai-primary-runtime"]
+enabled = true
+
+[plugins."template-creator@openai-primary-runtime"]
+enabled = true
+
+[plugins."browser@openai-bundled"]
+enabled = true
+
+[plugins."visualize@openai-bundled"]
+enabled = true
+
+[plugins."sites@openai-bundled"]
+enabled = true
+
+[features]
+suppress_unstable_features_warning = true
+network_proxy = true
+js_repl = false
+apps = false
+
+[projects.'c:\users\20463\pycharmprojects\rag-from-zero']
+trust_level = "trusted"
+
+[projects.'c:\users\20463\pycharmprojects\pythonday3']
+trust_level = "trusted"
+
+[projects.'c:\windows\system32']
+trust_level = "trusted"
+
+[projects.'c:\users\20463\documents\codex\2026-07-12\language-language-for-the-app-ui']
+trust_level = "trusted"
+
+[projects.'c:\users\20463\documents\codex\2026-07-12\111']
+trust_level = "trusted"
+
+[tui.model_availability_nux]
+"gpt-5.5" = 4
+"gpt-5.6-sol" = 4
+
+[windows]
+sandbox = "elevated"
+
+[shell_environment_policy]
+inherit = "core"
+
+[shell_environment_policy.set]
+http_proxy = "http://127.0.0.1:7890"
+https_proxy = "http://127.0.0.1:7890"
+HTTP_PROXY = "http://127.0.0.1:7890"
+HTTPS_PROXY = "http://127.0.0.1:7890"
+ANTHROPIC_BASE_URL = "https://api.deepseek.com/anthropic"
+ANTHROPIC_AUTH_TOKEN = "sk-4ca1dc8294534c0f9be96659123ec387"
+ANTHROPIC_MODEL = "DeepSeek-v4-flash"
+ANTHROPIC_REASONING_MODEL = "DeepSeek-v4-pro"
+ANTHROPIC_DEFAULT_OPUS_MODEL = "DeepSeek-v4-flash"
+ANTHROPIC_DEFAULT_HAIKU_MODEL = "DeepSeek-v4-flash"
+ANTHROPIC_DEFAULT_SONNET_MODEL = "DeepSeek-v4-flash"
+
+[desktop]
+conversationDetailMode = "STEPS_COMMANDS"
+ambient-suggestions-enabled = true
+localeOverride = "zh-CN"
+followUpQueueMode = "queue"
+
+[desktop.open-in-target-preferences]
+global = "pycharm"
+
+[desktop.open-in-target-preferences.perPath]
+'C:\Users\20463\PycharmProjects\rag-from-zero' = "pycharm"
+
+[mcp_servers.node_repl]
+args = []
+command = 'C:\Users\20463\AppData\Local\OpenAI\Codex\runtimes\cua_node\ecfc0d9aa02807e3\bin\node_repl.exe'
+startup_timeout_sec = 120
+
+[mcp_servers.node_repl.env]
+NODE_REPL_NATIVE_PIPE_CONNECT_TIMEOUT_MS = "1000"
+NODE_REPL_NODE_MODULE_DIRS = 'C:\Users\20463\AppData\Local\OpenAI\Codex\runtimes\cua_node\ecfc0d9aa02807e3\bin\node_modules'
+NODE_REPL_NODE_PATH = 'C:\Users\20463\AppData\Local\OpenAI\Codex\runtimes\cua_node\ecfc0d9aa02807e3\bin\node.exe'
+NODE_REPL_TRUSTED_CODE_PATHS = 'C:\Users\20463\.codex'
+CODEX_HOME = 'C:\Users\20463\.codex'
+NODE_REPL_TRUSTED_BROWSER_CLIENT_SHA256S = "2b020a2faded171bf620563ce51864b7c3ff320f1834f0044b73fcbeabb29a76,7ed52dae165c3bc22b6d24f282e2c1fbc87f6949fbbe037767a7418d8f517f01"
+BROWSER_USE_AVAILABLE_BACKENDS = "chrome,iab"
+NODE_REPL_INSTRUCTIONS_USE_CASE_BROWSER = "Control the in-app browser in conjunction with the Browser Plugin."
+NODE_REPL_INSTRUCTIONS_USE_CASE_CHROME = "Control the Chrome browser in conjunction with the Chrome Plugin. Prefer this method of controlling Chrome over alternatives (such as Computer Use) unless the user explicitly mentions an alternative."
+BROWSER_USE_CODEX_APP_BUILD_FLAVOR = "public-beta"
+BROWSER_USE_CODEX_APP_VERSION = "26.707.30751"
+SKY_CUA_NATIVE_PIPE = "1"
+SKY_CUA_NATIVE_PIPE_DIRECTORY = '\\.\pipe\codex-computer-use-4d2de5b9-f84a-4015-894c-0991367ac278'
+CODEX_CLI_PATH = 'C:\Users\20463\AppData\Local\OpenAI\Codex\bin\a7c12ebff69fb123\codex.exe'

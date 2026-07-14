@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>法智通 — 智能法律案例咨询平台</title>
+    <!-- Tailwind CSS v3 CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 配置 Tailwind 自定义颜色 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            200: '#bfdbfe',
+                            300: '#93c5fd',
+                            400: '#60a5fa',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a',
+                        },
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.3s ease-in-out',
+                        'slide-up': 'slideUp 0.3s ease-out',
+                        'pulse-slow': 'pulse 3s infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                    },
+                },
+            },
+        }
+    </script>
+    <style>
+        /* ── 自定义样式 ── */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html { scroll-behavior: smooth; }
+
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif; }
+
+        /* 渐变 hero 背景 */
+        .hero-gradient {
+            background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 50%, #2563eb 100%);
+        }
+
+        /* 聊天消息区域滚动条 */
+        .chat-scroll::-webkit-scrollbar { width: 6px; }
+        .chat-scroll::-webkit-scrollbar-track { background: transparent; }
+        .chat-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+        .chat-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        /* 会话列表滚动条 */
+        .session-scroll::-webkit-scrollbar { width: 4px; }
+        .session-scroll::-webkit-scrollbar-track { background: transparent; }
+        .session-scroll::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 2px; }
+
+        /* 消息气泡动画 */
+        .message-bubble {
+            animation: slideUp 0.3s ease-out;
+        }
+
+        /* Session 悬浮效果 */
+        .session-item {
+            transition: all 0.2s ease;
+        }
+        .session-item:hover {
+            background-color: #eff6ff;
+        }
+        .session-item.active {
+            background-color: #dbeafe;
+            border-left: 3px solid #2563eb;
+        }
+
+        /* 打字指示器 */
+        .typing-dot {
+            animation: typingBounce 1.4s infinite;
+        }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes typingBounce {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-6px); }
+        }
+
+        /* 卡片 hover 效果 */
+        .feature-card {
+            transition: all 0.3s ease;
+        }
+        .feature-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px -8px rgba(30, 64, 175, 0.15);
+        }
+
+        /* 服务卡片 */
+        .service-card {
+            transition: all 0.3s ease;
+        }
+        .service-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px -12px rgba(30, 64, 175, 0.2);
+        }
+
+        /* 按钮渐变 hover */
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #1d4ed8, #1e40af);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
+        }
+
+        /* 表单输入高亮 */
+        .chat-input:focus {
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+            border-color: #3b82f6;
+        }
+
+        /* 移动端侧栏过渡 */
+        .sidebar-overlay {
+            transition: opacity 0.3s ease;
+        }
+        .sidebar-panel {
+            transition: transform 0.3s ease;
+        }
+
+        /* 消息内容中 markdown 样式 */
+        .message-content p { margin-bottom: 0.5rem; }
+        .message-content strong { font-weight: 600; }
+        .message-content ul, .message-content ol { margin-left: 1.2rem; margin-bottom: 0.5rem; }
+        .message-content li { margin-bottom: 0.25rem; }
+        .message-content h1, .message-content h2, .message-content h3,
+        .message-content h4 { font-weight: 600; margin-top: 0.75rem; margin-bottom: 0.5rem; }
+        .message-content h3 { font-size: 1.05rem; }
+        .message-content hr { margin: 0.75rem 0; border-color: #e2e8f0; }
+        .message-content code {
+            background: #f1f5f9;
+            padding: 1px 4px;
+            border-radius: 3px;
+            font-size: 0.9em;
+        }
+        .message-content a { color: #2563eb; text-decoration: underline; }
+    </style>
+</head>
+<body class="bg-white text-slate-800 antialiased">
+
+    <!-- ============================================================ -->
+    <!-- 导航栏 -->
+    <!-- ============================================================ -->
+    <header class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-slate-100 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo -->
+                <div class="flex items-center gap-2">
+                    <!-- 天平图标 SVG -->
+                    <svg class="w-7 h-7 text-primary-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 2v20M4 6l8 4 8-4M6 10v8a4 4 0 0 0 8 0v-8"/>
+                    </svg>
+                    <span class="text-xl font-bold text-slate-800">法智通</span>
+                    <span class="hidden sm:inline text-sm text-slate-400 ml-1">· 智能法律咨询</span>
+                </div>
+
+                <!-- 桌面导航链接 -->
+                <nav class="hidden md:flex items-center gap-8">
+                    <a href="#features" class="text-sm font-medium text-slate-600 hover:text-primary-600 transition-colors">核心功能</a>
+                    <a href="#how-it-works" class="text-sm font-medium text-slate-600 hover:text-primary-600 transition-colors">使用流程</a>
+                    <a href="#chat-section" class="text-sm font-medium text-slate-600 hover:text-primary-600 transition-colors">开始咨询</a>
+                </nav>
+
+                <!-- CTA + 移动端菜单按钮 -->
+                <div class="flex items-center gap-3">
+                    <div id="auth-logged-out" class="hidden flex items-center gap-2">
+                        <input id="auth-username" type="text" maxlength="64" autocomplete="username"
+                               placeholder="账号"
+                               class="w-36 border border-slate-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-primary-400">
+                        <input id="auth-password" type="password" maxlength="128" autocomplete="current-password"
+                               placeholder="密码"
+                               class="w-32 border border-slate-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-primary-400">
+                        <button id="login-btn" type="button" class="btn-primary text-white text-xs font-medium px-3 py-2 rounded-lg">登录</button>
+                        <button id="register-btn" type="button" class="text-xs text-primary-600 hover:text-primary-800">注册</button>
+                    </div>
+                    <div id="auth-logged-in" class="hidden flex items-center gap-2">
+                        <span id="auth-status" class="text-xs text-slate-500"></span>
+                        <button id="logout-btn" type="button" class="text-xs text-red-500 hover:text-red-700">退出</button>
+                    </div>
+                    <a href="#chat-section"
+                       class="hidden sm:inline-flex btn-primary text-white text-sm font-medium px-5 py-2.5 rounded-lg shadow-lg shadow-primary-200">
+                        免费咨询
+                    </a>
+                    <!-- 移动端菜单按钮 -->
+                    <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg text-slate-500 hover:bg-slate-100 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 移动端下拉菜单 -->
+        <div id="mobile-menu" class="md:hidden hidden bg-white border-t border-slate-100">
+            <div class="px-4 py-3 space-y-2">
+                <a href="#features" class="block px-3 py-2 text-sm text-slate-600 hover:bg-primary-50 rounded-lg transition-colors">核心功能</a>
+                <a href="#how-it-works" class="block px-3 py-2 text-sm text-slate-600 hover:bg-primary-50 rounded-lg transition-colors">使用流程</a>
+                <a href="#chat-section" class="block px-3 py-2 text-sm text-slate-600 hover:bg-primary-50 rounded-lg transition-colors">开始咨询</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- ============================================================ -->
+    <!-- Hero 区域 -->
+    <!-- ============================================================ -->
+    <section class="hero-gradient min-h-[85vh] flex items-center pt-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 w-full">
+            <div class="max-w-3xl mx-auto text-center">
+                <!-- 装饰图标 -->
+                <div class="flex justify-center mb-8">
+                    <div class="w-20 h-20 bg-white/15 backdrop-blur rounded-2xl flex items-center justify-center">
+                        <svg class="w-10 h-10 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 2v20M4 6l8 4 8-4M6 10v8a4 4 0 0 0 8 0v-8"/>
+                            <path d="M2 18h20"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
+                    智能法律案例<br class="sm:hidden"/>
+                    <span class="text-primary-200">咨询平台</span>
+                </h1>
+                <p class="text-lg sm:text-xl text-primary-100/90 max-w-2xl mx-auto mb-10 leading-relaxed">
+                    基于 AI 的法律知识库检索与智能问答系统<br class="hidden sm:inline"/>
+                    快速检索最高人民法院指导性案例，获取专业法律分析
+                </p>
+
+                <!-- CTA -->
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <a href="#chat-section"
+                       class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white text-primary-700 font-semibold px-8 py-4 rounded-xl shadow-xl shadow-blue-900/20 hover:shadow-2xl hover:shadow-blue-900/30 transition-all duration-300 hover:-translate-y-0.5">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                        </svg>
+                        立即免费咨询
+                    </a>
+                    <a href="#features"
+                       class="w-full sm:w-auto inline-flex items-center justify-center gap-2 text-white/80 hover:text-white font-medium px-8 py-4 rounded-xl border border-white/20 hover:border-white/40 transition-all duration-300">
+                        了解平台
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+                        </svg>
+                    </a>
+                </div>
+
+                <!-- 数据统计 -->
+                <div class="mt-16 grid grid-cols-3 gap-6 max-w-lg mx-auto">
+                    <div class="text-center">
+                        <div class="text-2xl sm:text-3xl font-bold text-white">500+</div>
+                        <div class="text-xs sm:text-sm text-primary-200/80 mt-1">指导性案例</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl sm:text-3xl font-bold text-white">5000+</div>
+                        <div class="text-xs sm:text-sm text-primary-200/80 mt-1">知识条目</div>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-2xl sm:text-3xl font-bold text-white">AI</div>
+                        <div class="text-xs sm:text-sm text-primary-200/80 mt-1">智能分析</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 核心功能 -->
+    <!-- ============================================================ -->
+    <section id="features" class="py-20 bg-slate-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <span class="inline-block text-xs font-semibold text-primary-600 bg-primary-50 px-4 py-1.5 rounded-full mb-4">核心能力</span>
+                <h2 class="text-3xl sm:text-4xl font-bold text-slate-800">全方位的智能法律支持</h2>
+                <p class="mt-4 text-slate-500 max-w-2xl mx-auto">基于先进的 AI 检索与生成技术，为您提供精准、专业的法律案例分析与咨询</p>
+            </div>
+
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- 功能 1 -->
+                <div class="feature-card bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                    <div class="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-slate-800 mb-2">智能案例检索</h3>
+                    <p class="text-sm text-slate-500 leading-relaxed">基于语义理解的混合检索技术，精准匹配您所需的法律案例与裁判要旨</p>
+                </div>
+
+                <!-- 功能 2 -->
+                <div class="feature-card bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                    <div class="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-slate-800 mb-2">AI 法律咨询</h3>
+                    <p class="text-sm text-slate-500 leading-relaxed">以最高人民法院指导性案例为依据，提供专业的法律分析与建议</p>
+                </div>
+
+                <!-- 功能 3 -->
+                <div class="feature-card bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                    <div class="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-slate-800 mb-2">知识库管理</h3>
+                    <p class="text-sm text-slate-500 leading-relaxed">涵盖最高人民法院指导性案例、检例等权威法律知识体系</p>
+                </div>
+
+                <!-- 功能 4 -->
+                <div class="feature-card bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
+                    <div class="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center mb-4">
+                        <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path d="M12 20V10"/><path d="M18 20V5"/><path d="M6 20v-4"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-slate-800 mb-2">多维度分析</h3>
+                    <p class="text-sm text-slate-500 leading-relaxed">综合多篇相关案例进行对比分析，提供全面、立体的法律视角</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 使用流程 -->
+    <!-- ============================================================ -->
+    <section id="how-it-works" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <span class="inline-block text-xs font-semibold text-primary-600 bg-primary-50 px-4 py-1.5 rounded-full mb-4">使用流程</span>
+                <h2 class="text-3xl sm:text-4xl font-bold text-slate-800">三步获取法律分析</h2>
+                <p class="mt-4 text-slate-500 max-w-2xl mx-auto">简单三步，即可获得基于权威案例的专业法律分析</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8 lg:gap-12 max-w-4xl mx-auto">
+                <!-- 步骤 1 -->
+                <div class="text-center">
+                    <div class="w-16 h-16 hero-gradient rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg shadow-primary-200">
+                        <span class="text-2xl font-bold text-white">1</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-slate-800 mb-2">描述您的法律问题</h3>
+                    <p class="text-sm text-slate-500 leading-relaxed">用自然语言描述您遇到的法律问题或纠纷场景，尽可能提供关键细节</p>
+                </div>
+
+                <!-- 箭头（桌面端） -->
+                <div class="hidden md:flex items-center justify-center">
+                    <svg class="w-8 h-8 text-primary-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                    </svg>
+                </div>
+
+                <!-- 步骤 2 -->
+                <div class="text-center">
+                    <div class="w-16 h-16 hero-gradient rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg shadow-primary-200">
+                        <span class="text-2xl font-bold text-white">2</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-slate-800 mb-2">AI 检索与分析</h3>
+                    <p class="text-sm text-slate-500 leading-relaxed">系统自动检索知识库中匹配的指导性案例，并进行多维度智能分析</p>
+                </div>
+
+                <!-- 箭头（桌面端） -->
+                <div class="hidden md:flex items-center justify-center">
+                    <svg class="w-8 h-8 text-primary-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                    </svg>
+                </div>
+
+                <!-- 步骤 3 -->
+                <div class="text-center">
+                    <div class="w-16 h-16 hero-gradient rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg shadow-primary-200">
+                        <span class="text-2xl font-bold text-white">3</span>
+                    </div>
+                    <h3 class="text-lg font-semibold text-slate-800 mb-2">获得专业回答</h3>
+                    <p class="text-sm text-slate-500 leading-relaxed">查看基于案例的法律分析，包含相关法条、裁判要旨与综合建议</p>
+                </div>
+            </div>
+
+            <!-- 底部 CTA -->
+            <div class="text-center mt-12">
+                <a href="#chat-section"
+                   class="inline-flex items-center gap-2 btn-primary text-white font-medium px-6 py-3 rounded-xl shadow-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                    </svg>
+                    开始咨询
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 聊天区域（含会话侧边栏） -->
+    <!-- ============================================================ -->
+    <section id="chat-section" class="bg-slate-50 border-t border-slate-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <!-- 区域标题 -->
+            <div class="text-center mb-8">
+                <span class="inline-block text-xs font-semibold text-primary-600 bg-primary-50 px-4 py-1.5 rounded-full mb-3">在线咨询</span>
+                <h2 class="text-2xl sm:text-3xl font-bold text-slate-800">智能法律咨询助手</h2>
+                <p class="mt-2 text-sm text-slate-500">描述您的法律问题，AI 助手将为您检索相关案例并提供专业分析</p>
+            </div>
+
+            <!-- 聊天主容器 -->
+            <div class="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden max-w-5xl mx-auto" style="height: 75vh; min-height: 500px;">
+                <div class="flex h-full">
+                    <!-- 侧边栏遮罩（移动端） -->
+                    <div id="sidebar-overlay" class="fixed inset-0 bg-black/30 z-40 hidden lg:hidden" onclick="toggleSidebar()"></div>
+
+                    <!-- ============================================ -->
+                    <!-- 会话侧边栏 -->
+                    <!-- ============================================ -->
+                    <div id="session-sidebar"
+                         class="sidebar-panel w-72 lg:w-64 xl:w-72 bg-white border-r border-slate-200 flex flex-col shrink-0
+                                fixed lg:static inset-y-0 left-0 z-50 lg:z-auto
+                                -translate-x-full lg:translate-x-0 transition-transform duration-300">
+
+                        <!-- 侧边栏头部 -->
+                        <div class="p-4 border-b border-slate-100">
+                            <div class="flex items-center justify-between mb-3">
+                                <h3 class="text-sm font-semibold text-slate-700">对话历史</h3>
+                                <!-- 关闭按钮（移动端） -->
+                                <button class="lg:hidden p-1 rounded hover:bg-slate-100 text-slate-400" onclick="toggleSidebar()">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <!-- 新建会话按钮 -->
+                            <button id="new-session-btn"
+                                    class="w-full flex items-center justify-center gap-2 bg-primary-50 hover:bg-primary-100 text-primary-700 text-sm font-medium px-4 py-2.5 rounded-xl transition-colors">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+                                </svg>
+                                新建对话
+                            </button>
+                        </div>
+
+                        <!-- 会话列表 -->
+                        <div id="session-list" class="flex-1 overflow-y-auto session-scroll p-2 space-y-1">
+                            <!-- 由 JS 动态渲染 -->
+                            <div class="flex items-center justify-center h-full text-slate-400 text-sm">
+                                <div class="text-center">
+                                    <svg class="w-8 h-8 mx-auto mb-2 text-slate-300 animate-pulse" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <circle cx="12" cy="12" r="10"/><path d="M16 12H8"/>
+                                    </svg>
+                                    加载中...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- ============================================ -->
+                    <!-- 主聊天区域 -->
+                    <!-- ============================================ -->
+                    <div class="flex-1 flex flex-col min-w-0">
+                        <!-- 聊天头部 -->
+                        <div class="flex items-center justify-between px-5 py-3 border-b border-slate-100 bg-white shrink-0">
+                            <div class="flex items-center gap-3">
+                                <!-- 侧边栏切换（移动端） -->
+                                <button id="sidebar-toggle" class="lg:hidden p-1.5 rounded-lg hover:bg-slate-100 text-slate-500" onclick="toggleSidebar()">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+                                    </svg>
+                                </button>
+                                <div class="w-8 h-8 hero-gradient rounded-lg flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <span class="text-sm font-semibold text-slate-700">法律咨询助手</span>
+                                    <span class="text-xs text-emerald-500 ml-2">● 在线</span>
+                                </div>
+                            </div>
+                            <span id="session-id-display" class="text-xs text-slate-400 hidden sm:inline"></span>
+                        </div>
+
+                        <!-- 消息展示区 -->
+                        <div id="chat-messages" class="flex-1 overflow-y-auto p-5 chat-scroll bg-slate-50/50 space-y-4">
+                            <!-- 欢迎消息 -->
+                            <div class="text-center py-12" id="welcome-message">
+                                <div class="w-16 h-16 bg-primary-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                                    <svg class="w-8 h-8 text-primary-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                                        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                                    </svg>
+                                </div>
+                                <h3 class="text-lg font-semibold text-slate-700 mb-2">欢迎来到法智通</h3>
+                                <p class="text-sm text-slate-400 max-w-sm mx-auto">请先新建一个对话，然后描述您的法律问题<br/>如：销售有毒有害食品会被判几年？</p>
+                                <button onclick="createNewSession()"
+                                        class="mt-4 inline-flex items-center gap-2 btn-primary text-white text-sm font-medium px-5 py-2.5 rounded-xl shadow-lg">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
+                                    </svg>
+                                    新建对话
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 输入区域 -->
+                        <div class="border-t border-slate-200 bg-white p-4 shrink-0">
+                            <div class="flex items-end gap-3">
+                                <div class="flex-1 relative">
+                                    <textarea id="chat-input"
+                                              class="chat-input w-full resize-none rounded-xl border border-slate-200 px-4 py-3 pr-12 text-sm
+                                                     focus:outline-none focus:border-primary-400 transition-colors"
+                                              rows="1"
+                                              placeholder="输入您的法律问题..."
+                                              oninput="autoResizeInput(this)"
+                                              onkeydown="handleKeyDown(event)"></textarea>
+                                </div>
+                                <button id="send-btn"
+                                        onclick="sendMessage()"
+                                        class="btn-primary text-white p-3 rounded-xl shadow-lg shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
+                                        disabled>
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <p class="text-xs text-slate-400 mt-2 pl-1">按 Enter 发送，Shift+Enter 换行</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============================================================ -->
+    <!-- 页脚 -->
+    <!-- ============================================================ -->
+    <footer class="bg-slate-900 text-slate-400 py-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
+                <!-- 品牌 -->
+                <div class="sm:col-span-2 lg:col-span-1">
+                    <div class="flex items-center gap-2 mb-4">
+                        <svg class="w-6 h-6 text-primary-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 2v20M4 6l8 4 8-4M6 10v8a4 4 0 0 0 8 0v-8"/>
+                        </svg>
+                        <span class="text-lg font-bold text-white">法智通</span>
+                    </div>
+                    <p class="text-sm leading-relaxed">基于 AI 的智能法律案例咨询平台，致力于为用户提供专业、准确的法律案例检索与分析服务。</p>
+                </div>
+                <!-- 快速链接 -->
+                <div>
+                    <h4 class="text-sm font-semibold text-white mb-4">快速链接</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li><a href="#features" class="hover:text-white transition-colors">核心功能</a></li>
+                        <li><a href="#how-it-works" class="hover:text-white transition-colors">使用流程</a></li>
+                        <li><a href="#chat-section" class="hover:text-white transition-colors">开始咨询</a></li>
+                    </ul>
+                </div>
+                <!-- 功能 -->
+                <div>
+                    <h4 class="text-sm font-semibold text-white mb-4">功能</h4>
+                    <ul class="space-y-2 text-sm">
+                        <li class="text-slate-500">智能案例检索</li>
+                        <li class="text-slate-500">AI 法律分析</li>
+                        <li class="text-slate-500">多维度对比</li>
+                    </ul>
+                </div>
+                <!-- 联系 -->
+                <div>
+                    <h4 class="text-sm font-semibold text-white mb-4">免责声明</h4>
+                    <p class="text-xs leading-relaxed text-slate-500">本平台提供的法律分析仅供参考，不构成正式的法律意见。如需法律帮助，请咨询专业律师。</p>
+                </div>
+            </div>
+            <div class="border-t border-slate-800 pt-8 text-center text-sm text-slate-600">
+                &copy; 2026 法智通 · 智能法律案例咨询平台. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- ============================================================ -->
+    <!-- JavaScript -->
+    <!-- ============================================================ -->
+    <script>
+    /**
+     * ============================================================
+     * 法律咨询前端 — 主逻辑
+     * - 会话管理（新建、切换、列表）
+     * - 消息收发
+     * - UI 状态管理
+     * ============================================================
+     */
+
+    // ── 全局状态 ──
+    const STATE = {
+        currentSessionId: null,
+        sessions: [],
+        messages: [],
+        isLoading: false,
+        token: localStorage.getItem('legal_api_token') || '',
+        username: localStorage.getItem('legal_username') || '',
+        streamController: null,
+    };
+
+    // ── API 基础路径 ──
+    const API_BASE = window.location.origin;
+
+    // ── DOM 引用 ──
+    const $ = (sel) => document.querySelector(sel);
+    const $$ = (sel) => document.querySelectorAll(sel);
+
+    const chatMessages = document.getElementById('chat-messages');
+    const chatInput = document.getElementById('chat-input');
+    const sendBtn = document.getElementById('send-btn');
+    const sessionList = document.getElementById('session-list');
+    const welcomeMsg = document.getElementById('welcome-message');
+    const newSessionBtn = document.getElementById('new-session-btn');
+    const sessionIdDisplay = document.getElementById('session-id-display');
+    const sidebarToggle = document.getElementById('sidebar-toggle');
+    const sidebarOverlay = document.getElementById('sidebar-overlay');
+    const sidebarPanel = document.getElementById('session-sidebar');
+    const authLoggedOut = document.getElementById('auth-logged-out');
+    const authLoggedIn = document.getElementById('auth-logged-in');
+    const authUsername = document.getElementById('auth-username');
+    const authPassword = document.getElementById('auth-password');
+    const authStatus = document.getElementById('auth-status');
+    const loginBtn = document.getElementById('login-btn');
+    const registerBtn = document.getElementById('register-btn');
+    const logoutBtn = document.getElementById('logout-btn');
+
+    // ── 工具函数 ──
+
+    function autoResizeInput(el) {
+        el.style.height = 'auto';
+        el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+        // 输入框有内容时启用发送按钮
+        sendBtn.disabled = !el.value.trim() || STATE.isLoading;
+    }
+
+    function handleKeyDown(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+        }
+    }
+
+    function toggleSidebar() {
+        const isOpen = !sidebarPanel.classList.contains('-translate-x-full');
+        if (isOpen) {
+            sidebarPanel.classList.add('-translate-x-full');
+            sidebarOverlay.classList.add('hidden');
+        } else {
+            sidebarPanel.classList.remove('-translate-x-full');
+            sidebarOverlay.classList.remove('hidden');
+        }
+    }
+
+    // 移动端自动关闭侧栏
+    function closeSidebarOnMobile() {
+        if (window.innerWidth < 1024) {
+            sidebarPanel.classList.add('-translate-x-full');
+            sidebarOverlay.classList.add('hidden');
+        }
+    }
+
+    function scrollToBottom() {
+        setTimeout(() => {
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }, 50);
+    }
+
+    function formatTime() {
+        const now = new Date();
+        return now.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+    }
+
+    // ── API 调用 ──
+
+    function buildAuthHeaders(extra = {}) {
+        return STATE.token
+            ? { ...extra, 'Authorization': `Bearer ${STATE.token}` }
+            : { ...extra };
+    }
+
+    function resetConversationState() {
+        if (STATE.streamController) STATE.streamController.abort();
+        STATE.streamController = null;
+        STATE.isLoading = false;
+        STATE.currentSessionId = null;
+        STATE.sessions = [];
+        STATE.messages = [];
+        sessionIdDisplay.textContent = '未选择';
+        renderSessionList();
+        renderMessages();
+    }
+
+    function updateAuthUI() {
+        const loggedIn = Boolean(STATE.token);
+        authLoggedOut.classList.toggle('hidden', loggedIn);
+        authLoggedIn.classList.toggle('hidden', !loggedIn);
+        authStatus.textContent = loggedIn ? `已登录：${STATE.username}` : '';
+        newSessionBtn.disabled = !loggedIn;
+        chatInput.disabled = !loggedIn;
+        if (!loggedIn) chatInput.placeholder = '请先在右上角注册或登录';
+    }
+
+    function clearLoginState(message) {
+        localStorage.removeItem('legal_api_token');
+        localStorage.removeItem('legal_username');
+        localStorage.removeItem('legal_user_label');
+        STATE.token = '';
+        STATE.username = '';
+        authPassword.value = '';
+        resetConversationState();
+        updateAuthUI();
+        if (message) alert(message);
+    }
+
+    async function responseError(resp) {
+        const payload = await resp.json().catch(() => ({}));
+        const messages = {
+            401: '登录已失效，请重新登录。',
+            404: '请求的会话不存在，或您无权访问。',
+            413: '请求内容过大，请缩短问题后重试。',
+            429: '请求过于频繁，请稍后再试。',
+        };
+        const error = new Error(messages[resp.status] || payload.error || `请求失败（HTTP ${resp.status}）`);
+        error.status = resp.status;
+        if (resp.status === 401) clearLoginState(messages[401]);
+        return error;
+    }
+
+    async function apiGet(url) {
+        const resp = await fetch(API_BASE + url, { headers: buildAuthHeaders() });
+        if (!resp.ok) throw await responseError(resp);
+        return resp.json();
+    }
+
+    async function apiPost(url, body) {
+        const resp = await fetch(API_BASE + url, {
+            method: 'POST',
+            headers: buildAuthHeaders({ 'Content-Type': 'application/json' }),
+            body: JSON.stringify(body),
+        });
+        if (!resp.ok) {
+            throw await responseError(resp);
+        }
+        return resp.json();
+    }
+
+    async function submitAuth(action) {
+        const username = authUsername.value.trim();
+        const password = authPassword.value;
+        if (!username || !password) return alert('请输入账号和密码。');
+        const resp = await fetch(`${API_BASE}/api/auth/${action}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password }),
+        });
+        const data = await resp.json().catch(() => ({}));
+        if (!resp.ok) {
+            const known = {
+                400: '账号格式不正确，或密码长度不符合要求。',
+                401: '账号或密码错误。',
+                409: '该账号已经注册，请直接登录。',
+                429: '尝试次数过多，请稍后再试。',
+            };
+            return alert(known[resp.status] || data.error || '操作失败，请稍后重试。');
+        }
+        resetConversationState();
+        STATE.token = data.token;
+        STATE.username = data.username;
+        localStorage.setItem('legal_api_token', STATE.token);
+        localStorage.setItem('legal_username', STATE.username);
+        authPassword.value = '';
+        updateAuthUI();
+        await fetchSessions();
+        if (STATE.sessions.length) await switchSession(String(STATE.sessions[0].id));
+    }
+
+    // ── 获取会话列表 ──
+
+    async function fetchSessions() {
+        if (!STATE.token) {
+            STATE.sessions = [];
+            renderSessionList();
+            return;
+        }
+        try {
+            const data = await apiGet('/api/sessions');
+            STATE.sessions = data.sessions || [];
+            renderSessionList();
+        } catch (e) {
+            console.error('获取会话列表失败:', e);
+            sessionList.replaceChildren();
+            const box = document.createElement('div');
+            box.className = 'text-center py-8 text-red-400 text-sm';
+            const message = document.createElement('p');
+            message.textContent = e.message || '无法连接服务器';
+            const retry = document.createElement('button');
+            retry.className = 'text-primary-500 hover:underline mt-2';
+            retry.textContent = '重试';
+            retry.addEventListener('click', fetchSessions);
+            box.append(message, retry);
+            sessionList.appendChild(box);
+        }
+    }
+
+    // ── 渲染会话列表 ──
+
+    function renderSessionList() {
+        if (!STATE.sessions.length) {
+            sessionList.innerHTML = `
+                <div class="text-center py-8 text-slate-400 text-sm">
+                    <svg class="w-8 h-8 mx-auto mb-2 text-slate-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                    </svg>
+                    暂无对话记录<br/>
+                    <span class="text-xs text-slate-300">点击上方"新建对话"开始</span>
+                </div>`;
+            return;
+        }
+
+        sessionList.replaceChildren();
+        STATE.sessions.forEach(s => {
+            const isActive = s.id === STATE.currentSessionId;
+            const item = document.createElement('div');
+            item.className = `session-item ${isActive ? 'active' : ''} rounded-xl px-3 py-2.5 cursor-pointer`;
+            const preview = document.createElement('p');
+            preview.className = 'text-sm text-slate-700 truncate font-medium';
+            preview.textContent = s.preview || '(空会话)';
+            const count = document.createElement('p');
+            count.className = 'text-xs text-slate-400 mt-0.5';
+            count.textContent = `${Number(s.message_count) || 0} 条消息`;
+            item.append(preview, count);
+            item.addEventListener('click', () => switchSession(String(s.id)));
+            sessionList.appendChild(item);
+        });
+    }
+
+    // ── 简易 HTML 转义 ──
+
+    function escapeHtml(str) {
+        if (!str) return '(空会话)';
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.textContent;
+    }
+
+    // ── 切换会话 ──
+
+    async function switchSession(sessionId) {
+        if (sessionId === STATE.currentSessionId) return;
+
+        STATE.currentSessionId = sessionId;
+        STATE.messages = [];
+        renderSessionList();
+        sessionIdDisplay.textContent = sessionId.slice(0, 8) + '...';
+        closeSidebarOnMobile();
+
+        // 加载消息
+        showLoadingMessages();
+        try {
+            const data = await apiGet(`/api/sessions/${encodeURIComponent(sessionId)}/messages`);
+            STATE.messages = data.messages || [];
+            renderMessages();
+        } catch (e) {
+            console.error('加载消息失败:', e);
+            showErrorMessages('加载消息失败，请重试');
+        }
+    }
+
+    // ── 新建会话 ──
+
+    async function createNewSession() {
+        if (!STATE.token) return alert('请先登录。');
+        try {
+            const data = await apiPost('/api/sessions', {});
+            STATE.currentSessionId = data.session_id;
+            STATE.messages = [];
+            await fetchSessions(); // 刷新列表
+            renderMessages();
+            sessionIdDisplay.textContent = data.session_id.slice(0, 8) + '...';
+            chatInput.focus();
+            closeSidebarOnMobile();
+        } catch (e) {
+            console.error('新建会话失败:', e);
+            alert('创建会话失败，请确认服务器是否在运行');
+        }
+    }
+
+    // ── 发送消息 ──
+
+    async function sendMessage() {
+        if (!STATE.token) return alert('请先登录。');
+        const text = chatInput.value.trim();
+        if (!text || STATE.isLoading || !STATE.currentSessionId) {
+            if (!STATE.currentSessionId) {
+                await createNewSession();
+                setTimeout(() => sendMessage(), 100);
+            }
+            return;
+        }
+
+        // 清空输入
+        chatInput.value = '';
+        chatInput.style.height = 'auto';
+        sendBtn.disabled = true;
+
+        // 添加用户消息
+        addMessageBubble('user', text);
+        scrollToBottom();
+
+        STATE.isLoading = true;
+        sendBtn.disabled = true;
+
+        // 创建 assistant 气泡占位
+        removeTypingIndicator();
+        const bubbleDiv = createAssistantBubble('');
+
+        try {
+            STATE.streamController = new AbortController();
+            const resp = await fetch(API_BASE + '/api/chat/stream', {
+                method: 'POST',
+                headers: buildAuthHeaders({ 'Content-Type': 'application/json' }),
+                signal: STATE.streamController.signal,
+                body: JSON.stringify({
+                    message: text,
+                    session_id: STATE.currentSessionId,
+                }),
+            });
+
+            if (!resp.ok) throw await responseError(resp);
+            if (!resp.body) throw new Error('浏览器不支持流式读取');
+
+            const reader = resp.body.getReader();
+            const decoder = new TextDecoder();
+            let buffer = '';
+            let fullContent = '';
+
+            while (true) {
+                const { done, value } = await reader.read();
+                if (done) break;
+
+                buffer += decoder.decode(value, { stream: true });
+                const lines = buffer.split('\n');
+                buffer = lines.pop() || '';  // 保留未完成的行
+
+                for (const line of lines) {
+                    const trimmed = line.trim();
+                    if (!trimmed || !trimmed.startsWith('data: ')) continue;
+                    try {
+                        const evt = JSON.parse(trimmed.slice(6));
+                        if (evt.type === 'meta') {
+                            STATE.currentSessionId = evt.session_id;
+                            sessionIdDisplay.textContent = evt.session_id.slice(0, 8) + '...';
+                        } else if (evt.type === 'chunk') {
+                            fullContent += evt.content;
+                            // 实时更新气泡内容（延迟渲染markdown，避免闪烁）
+                            const contentDiv = bubbleDiv.querySelector('.stream-content');
+                            if (contentDiv) {
+                                contentDiv.innerHTML = renderMarkdown(fullContent);
+                                scrollToBottom();
+                            }
+                        } else if (evt.type === 'done') {
+                            // 正文已由 chunk 增量拼接；done 仅表示流正常结束。
+                        } else if (evt.type === 'error') {
+                            throw new Error(evt.content);
+                        }
+                    } catch (e) {
+                        // JSON 解析错误跳过
+                        if (e.message.startsWith('服务器错误') || e.message.startsWith('HTTP')) throw e;
+                    }
+                }
+            }
+
+            // 刷新会话列表
+            await fetchSessions();
+        } catch (e) {
+            if (e.name === 'AbortError') return;
+            console.error('流式对话失败:', e);
+            const contentDiv = bubbleDiv.querySelector('.stream-content');
+            if (contentDiv) {
+                contentDiv.innerHTML = '<p class="text-red-500">抱歉，对话失败: ' + escapeHtml(e.message) + '</p>';
+            }
+            scrollToBottom();
+        } finally {
+            STATE.streamController = null;
+            STATE.isLoading = false;
+            sendBtn.disabled = !chatInput.value.trim();
+        }
+    }
+
+    // ── 创建可增量更新的 assistant 气泡 ──
+
+    function createAssistantBubble(initialContent) {
+        const welcome = document.getElementById('welcome-message');
+        if (welcome) welcome.remove();
+
+        const div = document.createElement('div');
+        div.className = 'message-bubble flex justify-start items-start gap-3';
+
+        div.innerHTML = `
+            <div class="w-8 h-8 hero-gradient rounded-xl flex items-center justify-center shrink-0 mt-1">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                </svg>
+            </div>
+            <div class="max-w-[80%]">
+                <div class="bg-white text-slate-700 border border-slate-200 rounded-2xl rounded-tl-md px-4 py-3 shadow-sm">
+                    <div class="stream-content message-content text-sm leading-relaxed whitespace-pre-wrap">${renderMarkdown(initialContent)}</div>
+                </div>
+                <p class="text-xs text-slate-400 mt-1 text-left">${formatTime()}</p>
+            </div>
+        `;
+
+        chatMessages.appendChild(div);
+        return div;
+    }
+
+    // ── 添加消息气泡 ──
+
+    function addMessageBubble(role, content) {
+        // 移除欢迎消息
+        const welcome = document.getElementById('welcome-message');
+        if (welcome) welcome.remove();
+
+        const isUser = role === 'user';
+        const isSystem = role === 'system';
+
+        const div = document.createElement('div');
+        div.className = `message-bubble flex ${isUser ? 'justify-end' : 'justify-start'} items-start gap-3`;
+
+        div.innerHTML = `
+            ${!isUser ? `
+                <div class="w-8 h-8 ${isSystem ? 'bg-amber-100' : 'hero-gradient'} rounded-xl flex items-center justify-center shrink-0 mt-1">
+                    <svg class="w-4 h-4 ${isSystem ? 'text-amber-600' : 'text-white'}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        ${isSystem
+                            ? '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'
+                            : '<path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>'
+                        }
+                    </svg>
+                </div>
+            ` : ''}
+            <div class="max-w-[80%] ${isUser ? 'order-first' : ''}">
+                <div class="${isUser
+                    ? 'bg-primary-600 text-white rounded-2xl rounded-tr-md'
+                    : isSystem
+                        ? 'bg-amber-50 text-amber-800 border border-amber-200 rounded-2xl rounded-tl-md'
+                        : 'bg-white text-slate-700 border border-slate-200 rounded-2xl rounded-tl-md'
+                } px-4 py-3 shadow-sm">
+                    <div class="message-content text-sm leading-relaxed whitespace-pre-wrap">${isUser ? escapeHtml(content) : renderMarkdown(content)}</div>
+                </div>
+                <p class="text-xs text-slate-400 mt-1 ${isUser ? 'text-right' : 'text-left'}">${formatTime()}</p>
+            </div>
+            ${isUser ? `
+                <div class="w-8 h-8 bg-primary-100 rounded-xl flex items-center justify-center shrink-0 mt-1">
+                    <svg class="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                    </svg>
+                </div>
+            ` : ''}
+        `;
+
+        chatMessages.appendChild(div);
+    }
+
+    // ── 简单的 Markdown 渲染（标题、加粗、列表、代码、换行） ──
+
+    function renderMarkdown(text) {
+        if (!text) return '';
+        let html = escapeHtml(text);
+
+        // 将换行转为 <br>（保留段落）
+        html = html.replace(/\n\n/g, '</p><p class="mb-2">');
+        html = html.replace(/\n/g, '<br>');
+        html = '<p>' + html + '</p>';
+
+        // 加粗 **text**
+        html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+
+        // 行内代码 `code`
+        html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+        // 无序列表 - 开头带 * 或 - 的行
+        html = html.replace(/<p>(?:<br>)?\s*[\*\-]\s+(.+?)<\/p>/g, '<li class="ml-4 list-disc">$1</li>');
+        html = html.replace(/(<li[^>]*>.*?<\/li>)/g, match => {
+            // 如果连续多个 <li>，包在 <ul> 里
+            return match;
+        });
+
+        // 标题 ### text
+        html = html.replace(/<p>#{3}\s+(.+?)<\/p>/g, '<h4 class="font-semibold mt-3 mb-1">$1</h4>');
+        html = html.replace(/<p>#{2}\s+(.+?)<\/p>/g, '<h3 class="font-semibold mt-3 mb-1">$1</h3>');
+        html = html.replace(/<p>#{1}\s+(.+?)<\/p>/g, '<h2 class="font-semibold mt-3 mb-1">$1</h2>');
+
+        // 修复连续 <li> 没有 <ul> 包裹的问题
+        html = html.replace(/((?:<li[^>]*>.*?<\/li>\s*)+)/g, '<ul class="mb-2">$1</ul>');
+
+        // 水平线
+        html = html.replace(/<p>-{3,}<\/p>/g, '<hr class="my-3">');
+
+        // 空 <p> 清理
+        html = html.replace(/<p><\/p>/g, '');
+        html = html.replace(/<p>\s*<\/p>/g, '');
+
+        // 段落前后包裹
+        html = html.replace(/^<p>/, '');
+        html = html.replace(/<\/p>$/, '');
+
+        // 如果已经是 <ul> 包裹了，去掉多余空行
+        return html || text;
+    }
+
+    // ── 渲染消息列表 ──
+
+    function renderMessages() {
+        // 清除消息区（保留欢迎消息作为默认）
+        const welcome = document.getElementById('welcome-message');
+        if (welcome) welcome.remove();
+
+        // 移除所有消息气泡
+        chatMessages.querySelectorAll('.message-bubble').forEach(el => el.remove());
+
+        if (!STATE.messages.length) {
+            // 显示欢迎
+            chatMessages.innerHTML = `
+                <div class="text-center py-12" id="welcome-message">
+                    <div class="w-16 h-16 bg-primary-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-primary-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                            <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-slate-700 mb-2">新对话</h3>
+                    <p class="text-sm text-slate-400">在下方输入您的法律问题，开始咨询</p>
+                </div>
+            `;
+            return;
+        }
+
+        STATE.messages.forEach(msg => {
+            addMessageBubble(msg.role, msg.content);
+        });
+        scrollToBottom();
+    }
+
+    // ── 显示/隐藏加载状态 ──
+
+    function showLoadingMessages() {
+        const welcome = document.getElementById('welcome-message');
+        if (welcome) welcome.remove();
+        chatMessages.querySelectorAll('.message-bubble').forEach(el => el.remove());
+        chatMessages.innerHTML = `
+            <div class="flex items-center justify-center h-full text-slate-400 text-sm">
+                <div class="text-center">
+                    <svg class="w-8 h-8 mx-auto mb-2 text-slate-300 animate-spin" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10" stroke-dasharray="31.4 31.4" stroke-linecap="round"/>
+                    </svg>
+                    加载中...
+                </div>
+            </div>
+        `;
+    }
+
+    function showErrorMessages(msg) {
+        const welcome = document.getElementById('welcome-message');
+        if (welcome) welcome.remove();
+        chatMessages.querySelectorAll('.message-bubble').forEach(el => el.remove());
+        chatMessages.innerHTML = `
+            <div class="flex items-center justify-center h-full text-slate-400 text-sm">
+                <div class="text-center">
+                    <svg class="w-8 h-8 mx-auto mb-2 text-red-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                    ${msg}
+                    <button onclick="fetchSessions()" class="block mx-auto mt-2 text-primary-500 hover:underline">重试</button>
+                </div>
+            </div>
+        `;
+    }
+
+    function showTypingIndicator() {
+        removeTypingIndicator();
+        const div = document.createElement('div');
+        div.id = 'typing-indicator';
+        div.className = 'message-bubble flex justify-start items-start gap-3';
+        div.innerHTML = `
+            <div class="w-8 h-8 hero-gradient rounded-xl flex items-center justify-center shrink-0 mt-1">
+                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
+                </svg>
+            </div>
+            <div class="bg-white border border-slate-200 rounded-2xl rounded-tl-md px-5 py-4 shadow-sm">
+                <div class="flex items-center gap-1.5">
+                    <span class="typing-dot w-2 h-2 bg-primary-400 rounded-full inline-block"></span>
+                    <span class="typing-dot w-2 h-2 bg-primary-400 rounded-full inline-block"></span>
+                    <span class="typing-dot w-2 h-2 bg-primary-400 rounded-full inline-block"></span>
+                </div>
+            </div>
+        `;
+        chatMessages.appendChild(div);
+        scrollToBottom();
+    }
+
+    function removeTypingIndicator() {
+        const el = document.getElementById('typing-indicator');
+        if (el) el.remove();
+    }
+
+    // ── 初始化 ──
+
+    async function init() {
+        authUsername.value = STATE.username;
+        updateAuthUI();
+
+        loginBtn.addEventListener('click', () => submitAuth('login'));
+        registerBtn.addEventListener('click', () => submitAuth('register'));
+        logoutBtn.addEventListener('click', async () => {
+            try { await apiPost('/api/auth/logout', {}); }
+            finally { clearLoginState(); }
+        });
+
+        // 浏览器只在内部保存服务端签发的临时令牌，用户无需配置或输入 Token。
+        if (STATE.token) {
+            try {
+                const me = await apiGet('/api/auth/me');
+                STATE.username = me.username;
+                localStorage.setItem('legal_username', STATE.username);
+                updateAuthUI();
+                await fetchSessions();
+            } catch (e) {
+                console.error('恢复登录失败:', e);
+            }
+        }
+
+        // 如果有会话，自动选中第一个
+        if (STATE.sessions.length > 0) {
+            await switchSession(String(STATE.sessions[0].id));
+        }
+
+        // 绑定新建会话按钮
+        newSessionBtn.addEventListener('click', createNewSession);
+
+        // 监听输入框变化
+        chatInput.addEventListener('input', () => {
+            sendBtn.disabled = !chatInput.value.trim() || STATE.isLoading;
+        });
+
+        // 窗口 resize 时关闭移动端侧栏
+        window.addEventListener('resize', () => {
+            if (window.innerWidth >= 1024) {
+                sidebarPanel.classList.remove('-translate-x-full');
+                if (sidebarOverlay) sidebarOverlay.classList.add('hidden');
+            }
+        });
+    }
+
+    // 页面加载完成后初始化
+    document.addEventListener('DOMContentLoaded', init);
+
+    // ── 移动端菜单 ──
+    document.getElementById('mobile-menu-btn').addEventListener('click', () => {
+        const menu = document.getElementById('mobile-menu');
+        menu.classList.toggle('hidden');
+    });
+    </script>
+
+</body>
+</html>

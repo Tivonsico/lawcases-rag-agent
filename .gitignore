@@ -1,0 +1,38 @@
+# Plans are local implementation records.
+plans/
+
+# Secrets and local environments
+.env
+.env.*
+!.env.example
+.venv/
+venv/
+env/
+
+# Python/tool caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Runtime state, logs and generated reports
+runtime/
+rag_agent/runtime/
+logs/
+rag_agent/logs/
+*.log
+reports/
+rag_agent/reports/
+rag_agent/test_report*.json
+
+# Generated indexes and databases (existing files are left untouched)
+chroma_db/
+rag_agent/chroma_db/
+bm25_index.pkl
+rag_agent/bm25_index.pkl
+*.sqlite
+*.sqlite3
+rag_agent/long_term_memory.db
+rag_agent/sessions/
+

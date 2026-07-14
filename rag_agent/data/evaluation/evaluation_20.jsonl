@@ -1,0 +1,23 @@
+{"id": "eval-001", "query": "窃取他人人脸照片会怎么判", "relevant_case_ids": ["case:fbm-cli.c.502033787", "case:fbm-cli.c.564447952"], "judgments_exhaustive": false, "origin": "original_11"}
+{"id": "eval-002", "query": "交通事故和工伤竞合", "relevant_case_ids": ["case:fbm-cli.c.551652810"], "judgments_exhaustive": false, "origin": "original_11"}
+{"id": "eval-003", "query": "死刑案件抗诉", "relevant_case_ids": ["case:fbm-cli.c.350802", "case:fbm-cli.c.523873142", "case:fbm-cli.c.523868249", "case:fbm-cli.c.523863416"], "judgments_exhaustive": false, "origin": "original_11"}
+{"id": "eval-004", "query": "你好，亲问，销售有毒有害食品会被判几年？", "relevant_case_ids": ["case:fbm-cli.c.2452150", "case:fbm-cli.c.2452143", "case:fbm-cli.c.8726834", "case:fbm-cli.c.2452160", "case:fbm-cli.c.2452134"], "judgments_exhaustive": false, "origin": "original_11"}
+{"id": "eval-005", "query": "我是一个网约车司机，我发现乘客有时候不及时付钱，公司也会先把钱垫付给我，这样套现有法律风险吗？", "relevant_case_ids": ["case:fbm-cli.c.10014471"], "judgments_exhaustive": false, "origin": "original_11"}
+{"id": "eval-006", "query": "正当防卫的界限在哪？", "relevant_case_ids": ["case:fbm-cli.c.67337486", "case:fbm-cli.c.67337483", "case:fbm-cli.c.67337485", "case:fbm-cli.c.67337484", "case:fbm-cli.c.11292326", "case:fbm-cli.c.310492973"], "judgments_exhaustive": false, "origin": "original_11"}
+{"id": "eval-007", "query": "我把服务器放在国外，在上面免费播放盗版电影应该没事吧", "relevant_case_ids": ["case:fbm-cli.c.311583639", "case:fbm-cli.c.310492974", "case:fbm-cli.c.545462188"], "judgments_exhaustive": false, "origin": "original_11"}
+{"id": "eval-008", "query": "伪造软件 电信诈骗案例", "relevant_case_ids": ["case:fbm-cli.c.2991129"], "judgments_exhaustive": false, "origin": "original_11"}
+{"id": "eval-009", "query": "海上货物运输保险", "relevant_case_ids": ["case:fbm-cli.c.4438571"], "judgments_exhaustive": false, "origin": "original_11"}
+{"id": "eval-010", "query": "拆迁赔偿不服上诉", "relevant_case_ids": ["case:fbm-cli.c.10200689", "case:fbm-cli.c.324568442", "case:fbm-cli.c.324568445", "case:fbm-cli.c.559554730"], "judgments_exhaustive": false, "origin": "original_11"}
+{"id": "eval-011", "query": "海上货物运输合同", "relevant_case_ids": ["case:fbm-cli.c.556261672", "case:fbm-cli.c.556261674"], "judgments_exhaustive": false, "origin": "original_11"}
+{"id": "eval-012", "query": "现实中遇到与操纵证券市场、“抢帽子”交易、公开荐股有关的情况，一般应重点分析哪些法律问题？", "relevant_case_ids": ["case:fbm-cli.c.11399268", "case:fbm-cli.c.558514351"], "judgments_exhaustive": false, "origin": "auto_generated"}
+{"id": "eval-013", "query": "现实中遇到与刑事、抢劫罪、未成年人犯罪有关的情况，一般应重点分析哪些法律问题？", "relevant_case_ids": ["case:fbm-cli.c.1181156", "case:fbm-cli.c.3313038", "case:fbm-cli.c.312345806"], "judgments_exhaustive": false, "origin": "auto_generated"}
+{"id": "eval-014", "query": "现实中遇到与民事、关联公司、人格混同有关的情况，一般应重点分析哪些法律问题？", "relevant_case_ids": ["case:fbm-cli.c.1181159", "case:fbm-cli.c.325014729", "case:fbm-cli.c.325020172"], "judgments_exhaustive": false, "origin": "auto_generated"}
+{"id": "eval-015", "query": "现实中遇到与虚假诉讼、套路贷、刑民检察协同有关的情况，一般应重点分析哪些法律问题？", "relevant_case_ids": ["case:fbm-cli.c.120871451", "case:fbm-cli.c.76726117", "case:fbm-cli.c.550940700"], "judgments_exhaustive": false, "origin": "auto_generated"}
+{"id": "eval-016", "query": "现实中遇到与重大民生、区域治理、协同整改有关的情况，一般应重点分析哪些法律问题？", "relevant_case_ids": ["case:fbm-cli.c.120871455", "case:fbm-cli.c.431424072"], "judgments_exhaustive": false, "origin": "auto_generated"}
+{"id": "eval-017", "query": "现实中遇到与串通拍卖、串通投标、竞拍国有资产有关的情况，一般应重点分析哪些法律问题？", "relevant_case_ids": ["case:fbm-cli.c.122223594"], "judgments_exhaustive": false, "origin": "auto_generated"}
+{"id": "eval-018", "query": "现实中遇到与制假售假、假冒注册商标、监督立案有关的情况，一般应重点分析哪些法律问题？", "relevant_case_ids": ["case:fbm-cli.c.122223599", "case:fbm-cli.c.311583638", "case:fbm-cli.c.311583637", "case:fbm-cli.c.311583640", "case:fbm-cli.c.8917471"], "judgments_exhaustive": false, "origin": "auto_generated"}
+{"id": "eval-019", "query": "现实中遇到与编造、故意传播虚假恐怖信息罪有关的情况，一般应重点分析哪些法律问题？", "relevant_case_ids": ["case:fbm-cli.c.1414355", "case:fbm-cli.c.1414356", "case:fbm-cli.c.1414360"], "judgments_exhaustive": false, "origin": "auto_generated"}
+{"id": "eval-020", "query": "现实中遇到与受贿罪、食品监管渎职罪有关的情况，一般应重点分析哪些法律问题？", "relevant_case_ids": ["case:fbm-cli.c.2452166"], "judgments_exhaustive": false, "origin": "auto_generated"}
+{"id": "eval-101", "query": "指导案例52号说的是什么", "relevant_case_ids": ["case:fbm-cli.c.4438571"], "judgments_exhaustive": false, "origin": "manual_case_number"}
+{"id": "eval-102", "query": "柳立国相关的案件", "relevant_case_ids": ["case:fbm-cli.c.2452134"], "judgments_exhaustive": false, "origin": "manual_case_number"}
+{"id": "eval-103", "query": "指导性案例193号说的是什么", "relevant_case_ids": ["case:fbm-cli.c.502033788"], "judgments_exhaustive": false, "origin": "manual_case_number"}

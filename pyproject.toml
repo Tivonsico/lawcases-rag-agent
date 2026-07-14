@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "legal-case-rag"
+version = "0.1.0"
+description = "Local legal case retrieval-augmented generation prototype"
+readme = "rag_agent/README.md"
+requires-python = ">=3.10,<3.14"
+dependencies = [
+  "chromadb>=0.4.22,<2",
+  "numpy>=1.24,<3",
+  "rank-bm25>=0.2.2,<1",
+  "requests>=2.28,<3",
+  "jieba>=0.42.1,<1",
+  "flask>=3.0,<4",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8,<9"]
+
+[tool.setuptools]
+packages = ["rag_agent"]
+include-package-data = true
+
+[tool.setuptools.package-data]
+rag_agent = ["static/*.html", "data/evaluation/*.jsonl", "data/evaluation/*.json"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra"
+filterwarnings = [
+  "error::pytest.PytestUnhandledThreadExceptionWarning",
+]
