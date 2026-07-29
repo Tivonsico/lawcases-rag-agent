@@ -418,7 +418,15 @@
         streamController: null,
     };
 
-    const API_BASE = window.location.origin;
+    // 自动检测部署子路径：从页面 URL 推断（去除末尾文件名和斜杠）
+    const APP_PATH = (() => {
+        const p = window.location.pathname;
+        const end = p.lastIndexOf('/');
+        if (end <= 0) return '';
+        const dir = p.substring(0, end);  // e.g. /rag-agent
+        return dir === '' || dir === '/' ? '' : dir;
+    })();
+    const API_BASE = window.location.origin + APP_PATH;
 
     // ── DOM refs ──
     const $  = s => document.querySelector(s);
