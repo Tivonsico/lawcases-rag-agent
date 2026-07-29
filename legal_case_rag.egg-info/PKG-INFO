@@ -10,6 +10,7 @@ Requires-Dist: rank-bm25<1,>=0.2.2
 Requires-Dist: requests<3,>=2.28
 Requires-Dist: jieba<1,>=0.42.1
 Requires-Dist: flask<4,>=3.0
+Requires-Dist: gunicorn<24,>=22
 Provides-Extra: dev
 Requires-Dist: pytest<9,>=8; extra == "dev"
 
@@ -82,11 +83,10 @@ Invoke-RestMethod http://127.0.0.1:5000/api/health
 调参与留出评测严格分开：
 
 ```powershell
-python -m rag_agent.test_evaluator --split dev
-python -m rag_agent.test_evaluator --split test
+python rag_agent/main.py
 ```
 
-`dev` 用于选择候选数、RRF k/权重等参数；参数冻结后才运行 `test`。报告包含候选阶段 Recall@20/50/100 和最终排序指标。当前仅有 11 条原始标注，结果只能验证机制，不能代表真实线上质量，也不应据此宣称生产效果。
+启动后输入 `/test`。两次直接回车会评测 `evaluation_100.jsonl` 的 100 条数据，并使用与正常提问相同的完整混合检索（BM25 + 向量）。报告以中文显示召回率、准确率、命中率、平均准确率、NDCG、MRR 和 P50/P95 延迟；任一通道失败时会中止本次完整混合评测，不输出误导性的全 0 结果。需要离线排查时才在第二个提示输入 `bm25`。
 
 候选数应根据 dev 集 Recall 曲线的平台点选择：依次比较 K=20、50、100（需要时继续扩大）带来的召回增量与 P50/P95 延迟。当增大 K 几乎不再提高 Recall、但延迟明显增加时，选平台附近更小的 K，而不是固定选择最大值。
 

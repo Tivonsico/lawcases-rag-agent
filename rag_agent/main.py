@@ -72,55 +72,53 @@ def _read_query(session) -> str:
 
 
 def _drain_stdin(timeout=0.25):
-    """检测 stdin 缓冲区中是否还有等待读取的行（粘贴残留）。"""
-    import sys, time, threading, os
+    """检测 stdin 缓冲区中是否还有等待读取的行（粘贴残留）。
+
+    使用平台原生的非阻塞 API，避免在 Windows 上因
+    ``BufferedReader.peek()`` 阻塞导致死锁（详见下文）。
+
+    死锁背景：
+    ``BufferedReader.peek()`` 在持有内部锁的情况下调用底层
+    ``RawIO.read()``；而 Windows 控制台的 ``ReadConsoleW`` 会阻塞
+    直到有输入，且不释放锁。此时主线程若调用 ``input()``（即
+    ``readline()``），会试图获取同一把锁，造成永久的线程死锁。
+    """
+    import sys, time, os
 
     result = []
-    event = threading.Event()
+    deadline = time.monotonic() + timeout
 
-    def _reader():
-        while not event.is_set():
-            got = _try_readline()
-            if got is None:
-                time.sleep(0.02)
-            elif got == "":
+    if os.name == "nt":
+        try:
+            import msvcrt
+        except ImportError:
+            return result
+        while time.monotonic() < deadline:
+            if msvcrt.kbhit():
+                try:
+                    line = sys.stdin.readline().strip()
+                except (OSError, ValueError):
+                    break
+                if not line:
+                    break
+                result.append(line)
+            time.sleep(0.02)
+        return result
+
+    # ── Unix：select 非阻塞轮询 ──
+    import select as _select
+    while time.monotonic() < deadline:
+        r, _, _ = _select.select([sys.stdin], [], [], 0)
+        if r:
+            try:
+                line = sys.stdin.readline().strip()
+            except (OSError, ValueError):
                 break
-            else:
-                result.append(got)
-
-    def _try_readline():
-        """尝试非阻塞读一行，返回行 / None（暂无数据） / ''（EOF）"""
-        try:
-            if hasattr(sys.stdin, "buffer"):
-                buf = sys.stdin.buffer
-                if hasattr(buf, "peek"):
-                    ready = buf.peek(1)
-                    if not ready:
-                        return None
-            elif os.name != "nt":
-                import select
-                r, _, _ = select.select([sys.stdin], [], [], 0)
-                if not r:
-                    return None
-            else:
-                # Windows + 不支持 peek：只能阻塞，用超时兜底
-                pass
-        except (OSError, BlockingIOError, ValueError, ImportError, AttributeError):
-            return None
-
-        try:
-            line = sys.stdin.readline().strip()
             if not line:
-                return ""
-            return line
-        except (OSError, ValueError):
-            return ""
-
-    t = threading.Thread(target=_reader, daemon=True)
-    t.start()
-    event.wait(timeout)
-    event.set()
-    t.join(0.5)
+                break
+            result.append(line)
+        else:
+            time.sleep(0.02)
     return result
 
 

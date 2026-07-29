@@ -3,41 +3,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>法智通 — 智能法律案例咨询平台</title>
-    <!-- Tailwind CSS v3 CDN -->
+    <title>法智通 — 智能法律案例检索</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- 配置 Tailwind 自定义颜色 -->
     <script>
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
-                        primary: {
-                            50: '#eff6ff',
-                            100: '#dbeafe',
-                            200: '#bfdbfe',
-                            300: '#93c5fd',
-                            400: '#60a5fa',
-                            500: '#3b82f6',
-                            600: '#2563eb',
-                            700: '#1d4ed8',
-                            800: '#1e40af',
-                            900: '#1e3a8a',
+                        ink: {
+                            DEFAULT: '#0b1118',
+                            50:  '#faf8f4',
+                            100: '#ece6db',
+                            200: '#d4cdc0',
+                            300: '#b0a89b',
+                            400: '#7a746d',
+                            500: '#5c5650',
+                            600: '#3e3a35',
+                            700: '#282420',
+                            800: '#151a1e',
+                            900: '#0b1118',
+                        },
+                        pine: {
+                            DEFAULT: '#215a4d',
+                            50:  '#eaf5f1',
+                            100: '#d2ebe2',
+                            200: '#a5d7c5',
+                            300: '#6db89e',
+                            400: '#3d8c74',
+                            500: '#215a4d',
+                            600: '#1a4840',
+                            700: '#143732',
+                            800: '#0e2624',
+                            900: '#091816',
+                        },
+                        paper: {
+                            DEFAULT: '#faf8f4',
+                            50:  '#fefdfb',
+                            100: '#faf8f4',
+                            200: '#f3efe8',
+                            300: '#ece6db',
                         },
                     },
+                    fontFamily: {
+                        serif: ['"Noto Serif SC"', 'Georgia', 'serif'],
+                        sans: ['"PingFang SC"', '"Hiragino Sans GB"', '"Microsoft YaHei"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+                    },
                     animation: {
-                        'fade-in': 'fadeIn 0.3s ease-in-out',
-                        'slide-up': 'slideUp 0.3s ease-out',
-                        'pulse-slow': 'pulse 3s infinite',
+                        'reveal': 'reveal 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+                        'reveal-up': 'revealUp 0.5s cubic-bezier(0.16, 1, 0.3, 1)',
+                        'shimmer': 'shimmer 2s infinite',
                     },
                     keyframes: {
-                        fadeIn: {
+                        reveal: {
                             '0%': { opacity: '0' },
                             '100%': { opacity: '1' },
                         },
-                        slideUp: {
-                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                        revealUp: {
+                            '0%': { opacity: '0', transform: 'translateY(8px)' },
                             '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        shimmer: {
+                            '0%, 100%': { opacity: '1' },
+                            '50%': { opacity: '0.3' },
                         },
                     },
                 },
@@ -45,568 +75,339 @@
         }
     </script>
     <style>
-        /* ── 自定义样式 ── */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        /* ── Reset & Base ── */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+        body { font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", -apple-system, BlinkMacSystemFont, sans-serif; }
 
-        html { scroll-behavior: smooth; }
+        /* ── Scrollbar ── */
+        .custom-scroll::-webkit-scrollbar { width: 5px; }
+        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 10px; }
+        .custom-scroll::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.15); }
 
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif; }
-
-        /* 渐变 hero 背景 */
-        .hero-gradient {
-            background: linear-gradient(135deg, #1e40af 0%, #1d4ed8 50%, #2563eb 100%);
-        }
-
-        /* 聊天消息区域滚动条 */
-        .chat-scroll::-webkit-scrollbar { width: 6px; }
+        .chat-scroll::-webkit-scrollbar { width: 5px; }
         .chat-scroll::-webkit-scrollbar-track { background: transparent; }
-        .chat-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
-        .chat-scroll::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .chat-scroll::-webkit-scrollbar-thumb { background: #d4cdc0; border-radius: 10px; }
+        .chat-scroll::-webkit-scrollbar-thumb:hover { background: #b0a89b; }
 
-        /* 会话列表滚动条 */
-        .session-scroll::-webkit-scrollbar { width: 4px; }
-        .session-scroll::-webkit-scrollbar-track { background: transparent; }
-        .session-scroll::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 2px; }
-
-        /* 消息气泡动画 */
-        .message-bubble {
-            animation: slideUp 0.3s ease-out;
+        /* ── Message content typography ── */
+        .message-body p { margin-bottom: 0.6rem; line-height: 1.75; }
+        .message-body p:last-child { margin-bottom: 0; }
+        .message-body strong { font-weight: 600; color: #282420; }
+        .message-body ul, .message-body ol { margin: 0.5rem 0 0.5rem 1.4rem; }
+        .message-body li { margin-bottom: 0.3rem; }
+        .message-body h2, .message-body h3, .message-body h4 {
+            font-family: "Noto Serif SC", Georgia, serif;
+            font-weight: 600;
+            margin: 1rem 0 0.5rem;
+            color: #1a4840;
+        }
+        .message-body h3 { font-size: 1.05rem; }
+        .message-body h4 { font-size: 0.95rem; }
+        .message-body hr { margin: 1rem 0; border: none; border-top: 1px solid #ece6db; }
+        .message-body code {
+            background: #f3efe8;
+            padding: 1px 5px;
+            border-radius: 3px;
+            font-size: 0.88em;
+            color: #5c5650;
+        }
+        .message-body a { color: #215a4d; text-decoration: underline; text-underline-offset: 2px; }
+        .message-body blockquote {
+            border-left: 3px solid #215a4d;
+            padding-left: 1rem;
+            margin: 0.6rem 0;
+            color: #5c5650;
+            font-style: italic;
         }
 
-        /* Session 悬浮效果 */
-        .session-item {
+        /* ── Case citation badge ── */
+        .case-cite {
+            display: inline-block;
+            background: #eaf5f1;
+            color: #1a4840;
+            border: 1px solid #d2ebe2;
+            border-radius: 4px;
+            padding: 1px 6px;
+            font-size: 0.88em;
+            font-weight: 500;
+            white-space: nowrap;
             transition: all 0.2s ease;
         }
-        .session-item:hover {
-            background-color: #eff6ff;
+        .case-cite:hover {
+            background: #d2ebe2;
+            border-color: #a5d7c5;
         }
+
+        /* ── Session item ── */
+        .session-item {
+            transition: all 0.2s ease;
+            border-left: 2px solid transparent;
+        }
+        .session-item:hover { background: rgba(255,255,255,0.04); }
         .session-item.active {
-            background-color: #dbeafe;
-            border-left: 3px solid #2563eb;
+            background: rgba(33,90,77,0.12);
+            border-left-color: #215a4d;
         }
 
-        /* 打字指示器 */
-        .typing-dot {
-            animation: typingBounce 1.4s infinite;
-        }
-        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
-        @keyframes typingBounce {
-            0%, 60%, 100% { transform: translateY(0); }
-            30% { transform: translateY(-6px); }
+        /* ── Input focus ring ── */
+        .chat-input-area:focus-within {
+            box-shadow: 0 0 0 2px rgba(33,90,77,0.25);
+            border-color: #215a4d;
         }
 
-        /* 卡片 hover 效果 */
-        .feature-card {
-            transition: all 0.3s ease;
-        }
-        .feature-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 24px -8px rgba(30, 64, 175, 0.15);
-        }
-
-        /* 服务卡片 */
-        .service-card {
-            transition: all 0.3s ease;
-        }
-        .service-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 20px 40px -12px rgba(30, 64, 175, 0.2);
-        }
-
-        /* 按钮渐变 hover */
-        .btn-primary {
-            background: linear-gradient(135deg, #2563eb, #1d4ed8);
-            transition: all 0.3s ease;
-        }
-        .btn-primary:hover {
-            background: linear-gradient(135deg, #1d4ed8, #1e40af);
-            transform: translateY(-1px);
-            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
-        }
-
-        /* 表单输入高亮 */
-        .chat-input:focus {
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
-            border-color: #3b82f6;
-        }
-
-        /* 移动端侧栏过渡 */
-        .sidebar-overlay {
+        /* ── Mobile sidebar ── */
+        .sidebar-backdrop {
             transition: opacity 0.3s ease;
         }
         .sidebar-panel {
-            transition: transform 0.3s ease;
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        /* 消息内容中 markdown 样式 */
-        .message-content p { margin-bottom: 0.5rem; }
-        .message-content strong { font-weight: 600; }
-        .message-content ul, .message-content ol { margin-left: 1.2rem; margin-bottom: 0.5rem; }
-        .message-content li { margin-bottom: 0.25rem; }
-        .message-content h1, .message-content h2, .message-content h3,
-        .message-content h4 { font-weight: 600; margin-top: 0.75rem; margin-bottom: 0.5rem; }
-        .message-content h3 { font-size: 1.05rem; }
-        .message-content hr { margin: 0.75rem 0; border-color: #e2e8f0; }
-        .message-content code {
-            background: #f1f5f9;
-            padding: 1px 4px;
-            border-radius: 3px;
-            font-size: 0.9em;
+        /* ── Reduced motion ── */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
         }
-        .message-content a { color: #2563eb; text-decoration: underline; }
+
+        /* ── Suggestion cards ── */
+        .suggest-card {
+            transition: all 0.25s ease;
+        }
+        .suggest-card:hover {
+            background: #f3efe8;
+            border-color: #215a4d;
+            transform: translateY(-2px);
+        }
+
+        /* ── Button transitions ── */
+        .btn-send {
+            transition: all 0.2s ease;
+        }
+        .btn-send:not(:disabled):hover {
+            background: #1a4840;
+            transform: scale(1.03);
+        }
+        .btn-send:not(:disabled):active {
+            transform: scale(0.97);
+        }
     </style>
 </head>
-<body class="bg-white text-slate-800 antialiased">
+<body class="bg-ink min-h-screen text-ink-400 font-sans antialiased">
 
     <!-- ============================================================ -->
-    <!-- 导航栏 -->
+    <!-- App Shell -->
     <!-- ============================================================ -->
-    <header class="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-slate-100 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <!-- Logo -->
-                <div class="flex items-center gap-2">
-                    <!-- 天平图标 SVG -->
-                    <svg class="w-7 h-7 text-primary-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M12 2v20M4 6l8 4 8-4M6 10v8a4 4 0 0 0 8 0v-8"/>
+    <div class="flex h-screen overflow-hidden">
+
+        <!-- ======================================================== -->
+        <!-- Sidebar -->
+        <!-- ======================================================== -->
+        <aside id="sidebar"
+               class="sidebar-panel w-72 shrink-0 bg-ink border-r border-white/[0.06] flex flex-col
+                      fixed lg:static inset-y-0 left-0 z-50 lg:z-auto
+                      -translate-x-full lg:translate-x-0">
+            <!-- Brand -->
+            <div class="px-5 py-5 border-b border-white/[0.06]">
+                <div class="flex items-center gap-3 mb-1">
+                    <!-- Scales icon -->
+                    <svg class="w-7 h-7 text-pine-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="2" x2="12" y2="22"/>
+                        <path d="M3 7l4.5 2.5L12 7l4.5 2.5L21 7"/>
+                        <path d="M5 10.5v6a3 3 0 0 0 5.5 0v-6"/>
+                        <path d="M13.5 10.5v6a3 3 0 0 0 5.5 0v-6"/>
                     </svg>
-                    <span class="text-xl font-bold text-slate-800">法智通</span>
-                    <span class="hidden sm:inline text-sm text-slate-400 ml-1">· 智能法律咨询</span>
+                    <div>
+                        <h1 class="text-lg font-serif font-bold text-white tracking-wide">法智通</h1>
+                        <p class="text-[11px] text-ink-300 tracking-wider uppercase">LEGAL INTELLIGENCE</p>
+                    </div>
                 </div>
+            </div>
 
-                <!-- 桌面导航链接 -->
-                <nav class="hidden md:flex items-center gap-8">
-                    <a href="#features" class="text-sm font-medium text-slate-600 hover:text-primary-600 transition-colors">核心功能</a>
-                    <a href="#how-it-works" class="text-sm font-medium text-slate-600 hover:text-primary-600 transition-colors">使用流程</a>
-                    <a href="#chat-section" class="text-sm font-medium text-slate-600 hover:text-primary-600 transition-colors">开始咨询</a>
-                </nav>
+            <!-- New session -->
+            <div class="px-4 py-4">
+                <button id="new-session-btn"
+                        class="w-full flex items-center justify-center gap-2 bg-pine/15 hover:bg-pine/25 text-pine-300 text-sm font-medium px-4 py-2.5 rounded-lg border border-pine/20 hover:border-pine/30 transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" d="M12 5v14m-7-7h14"/>
+                    </svg>
+                    新建对话
+                </button>
+            </div>
 
-                <!-- CTA + 移动端菜单按钮 -->
+            <!-- Session list -->
+            <nav id="session-list" class="flex-1 overflow-y-auto custom-scroll px-3 py-1 space-y-0.5">
+                <div class="flex items-center justify-center h-full text-ink-300 text-sm">
+                    <div class="text-center">
+                        <svg class="w-6 h-6 mx-auto mb-2 text-ink-200 animate-shimmer" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M8 12h8"/>
+                        </svg>
+                        加载中…
+                    </div>
+                </div>
+            </nav>
+
+            <!-- User area -->
+            <div class="px-4 py-4 border-t border-white/[0.06]">
+                <!-- Logged out -->
+                <div id="sidebar-auth-logged-out" class="space-y-2">
+                    <input id="sidebar-username" type="text" maxlength="64" autocomplete="username"
+                           placeholder="账号"
+                           class="w-full bg-white/[0.05] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white placeholder-ink-300 focus:outline-none focus:border-pine/40 transition-colors">
+                    <input id="sidebar-password" type="password" maxlength="128" autocomplete="current-password"
+                           placeholder="密码"
+                           class="w-full bg-white/[0.05] border border-white/[0.08] rounded-lg px-3 py-2 text-sm text-white placeholder-ink-300 focus:outline-none focus:border-pine/40 transition-colors">
+                    <div class="flex gap-2">
+                        <button id="sidebar-login-btn"
+                                class="flex-1 bg-pine hover:bg-pine-600 text-white text-sm font-medium py-2 rounded-lg transition-colors">
+                            登录
+                        </button>
+                        <button id="sidebar-register-btn"
+                                class="flex-1 bg-white/[0.05] hover:bg-white/[0.1] text-ink-200 text-sm font-medium py-2 rounded-lg border border-white/[0.08] transition-colors">
+                            注册
+                        </button>
+                    </div>
+                </div>
+                <!-- Logged in -->
+                <div id="sidebar-auth-logged-in" class="hidden">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2 min-w-0">
+                            <div class="w-8 h-8 rounded-full bg-pine/20 flex items-center justify-center shrink-0">
+                                <span class="text-pine-300 text-xs font-semibold" id="sidebar-avatar-letter">?</span>
+                            </div>
+                            <span id="sidebar-username-display" class="text-sm text-ink-200 truncate"></span>
+                        </div>
+                        <button id="sidebar-logout-btn"
+                                class="text-xs text-ink-300 hover:text-red-400 transition-colors shrink-0 ml-2">
+                            退出
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Sidebar overlay (mobile) -->
+        <div id="sidebar-overlay" class="sidebar-backdrop fixed inset-0 bg-black/50 z-40 hidden lg:hidden"
+             onclick="closeSidebar()"></div>
+
+        <!-- ======================================================== -->
+        <!-- Main Chat Area -->
+        <!-- ======================================================== -->
+        <main class="flex-1 flex flex-col min-w-0 bg-paper">
+
+            <!-- Top bar -->
+            <header class="flex items-center justify-between px-5 py-3 bg-ink border-b border-white/[0.06] shrink-0">
                 <div class="flex items-center gap-3">
-                    <div id="auth-logged-out" class="hidden flex items-center gap-2">
-                        <input id="auth-username" type="text" maxlength="64" autocomplete="username"
-                               placeholder="账号"
-                               class="w-36 border border-slate-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-primary-400">
-                        <input id="auth-password" type="password" maxlength="128" autocomplete="current-password"
-                               placeholder="密码"
-                               class="w-32 border border-slate-200 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-primary-400">
-                        <button id="login-btn" type="button" class="btn-primary text-white text-xs font-medium px-3 py-2 rounded-lg">登录</button>
-                        <button id="register-btn" type="button" class="text-xs text-primary-600 hover:text-primary-800">注册</button>
-                    </div>
-                    <div id="auth-logged-in" class="hidden flex items-center gap-2">
-                        <span id="auth-status" class="text-xs text-slate-500"></span>
-                        <button id="logout-btn" type="button" class="text-xs text-red-500 hover:text-red-700">退出</button>
-                    </div>
-                    <a href="#chat-section"
-                       class="hidden sm:inline-flex btn-primary text-white text-sm font-medium px-5 py-2.5 rounded-lg shadow-lg shadow-primary-200">
-                        免费咨询
-                    </a>
-                    <!-- 移动端菜单按钮 -->
-                    <button id="mobile-menu-btn" class="md:hidden p-2 rounded-lg text-slate-500 hover:bg-slate-100 transition-colors">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
+                    <button id="menu-toggle" class="lg:hidden p-1.5 rounded-lg text-ink-300 hover:text-white hover:bg-white/[0.06] transition-colors"
+                            onclick="openSidebar()">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" d="M3 5h18M3 12h18M3 19h18"/>
                         </svg>
                     </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- 移动端下拉菜单 -->
-        <div id="mobile-menu" class="md:hidden hidden bg-white border-t border-slate-100">
-            <div class="px-4 py-3 space-y-2">
-                <a href="#features" class="block px-3 py-2 text-sm text-slate-600 hover:bg-primary-50 rounded-lg transition-colors">核心功能</a>
-                <a href="#how-it-works" class="block px-3 py-2 text-sm text-slate-600 hover:bg-primary-50 rounded-lg transition-colors">使用流程</a>
-                <a href="#chat-section" class="block px-3 py-2 text-sm text-slate-600 hover:bg-primary-50 rounded-lg transition-colors">开始咨询</a>
-            </div>
-        </div>
-    </header>
-
-    <!-- ============================================================ -->
-    <!-- Hero 区域 -->
-    <!-- ============================================================ -->
-    <section class="hero-gradient min-h-[85vh] flex items-center pt-16">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 w-full">
-            <div class="max-w-3xl mx-auto text-center">
-                <!-- 装饰图标 -->
-                <div class="flex justify-center mb-8">
-                    <div class="w-20 h-20 bg-white/15 backdrop-blur rounded-2xl flex items-center justify-center">
-                        <svg class="w-10 h-10 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 2v20M4 6l8 4 8-4M6 10v8a4 4 0 0 0 8 0v-8"/>
-                            <path d="M2 18h20"/>
-                        </svg>
+                    <div class="flex items-center gap-2.5">
+                        <span class="w-2 h-2 rounded-full bg-pine-300 shadow-[0_0_6px_rgba(109,184,158,0.5)]"></span>
+                        <span class="text-sm font-medium text-white font-serif">法律咨询助手</span>
                     </div>
                 </div>
+                <span id="session-id-display" class="text-xs text-ink-300 font-mono hidden sm:inline"></span>
+            </header>
 
-                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
-                    智能法律案例<br class="sm:hidden"/>
-                    <span class="text-primary-200">咨询平台</span>
-                </h1>
-                <p class="text-lg sm:text-xl text-primary-100/90 max-w-2xl mx-auto mb-10 leading-relaxed">
-                    基于 AI 的法律知识库检索与智能问答系统<br class="hidden sm:inline"/>
-                    快速检索最高人民法院指导性案例，获取专业法律分析
-                </p>
+            <!-- Messages -->
+            <div id="chat-messages" class="flex-1 overflow-y-auto chat-scroll bg-paper">
+                <!-- Welcome -->
+                <div id="welcome-message" class="flex flex-col items-center justify-center min-h-full px-6 py-16">
+                    <div class="max-w-lg w-full text-center animate-reveal">
+                        <!-- Brand mark -->
+                        <div class="mb-8">
+                            <svg class="w-12 h-12 mx-auto text-pine-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="12" y1="2" x2="12" y2="22"/>
+                                <path d="M3 7l4.5 2.5L12 7l4.5 2.5L21 7"/>
+                                <path d="M5 10.5v6a3 3 0 0 0 5.5 0v-6"/>
+                                <path d="M13.5 10.5v6a3 3 0 0 0 5.5 0v-6"/>
+                            </svg>
+                        </div>
+                        <h2 class="font-serif text-2xl font-bold text-ink-800 mb-3 tracking-tight">欢迎使用法智通</h2>
+                        <p class="text-ink-400 text-sm leading-relaxed mb-10">
+                            基于最高人民法院指导性案例的智能法律检索与分析系统<br>
+                            描述您的法律问题，AI 将检索权威案例并提供专业分析
+                        </p>
 
-                <!-- CTA -->
-                <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-                    <a href="#chat-section"
-                       class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white text-primary-700 font-semibold px-8 py-4 rounded-xl shadow-xl shadow-blue-900/20 hover:shadow-2xl hover:shadow-blue-900/30 transition-all duration-300 hover:-translate-y-0.5">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                        </svg>
-                        立即免费咨询
-                    </a>
-                    <a href="#features"
-                       class="w-full sm:w-auto inline-flex items-center justify-center gap-2 text-white/80 hover:text-white font-medium px-8 py-4 rounded-xl border border-white/20 hover:border-white/40 transition-all duration-300">
-                        了解平台
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
-                        </svg>
-                    </a>
-                </div>
-
-                <!-- 数据统计 -->
-                <div class="mt-16 grid grid-cols-3 gap-6 max-w-lg mx-auto">
-                    <div class="text-center">
-                        <div class="text-2xl sm:text-3xl font-bold text-white">500+</div>
-                        <div class="text-xs sm:text-sm text-primary-200/80 mt-1">指导性案例</div>
-                    </div>
-                    <div class="text-center">
-                        <div class="text-2xl sm:text-3xl font-bold text-white">5000+</div>
-                        <div class="text-xs sm:text-sm text-primary-200/80 mt-1">知识条目</div>
-                    </div>
-                    <div class="text-center">
-                        <div class="text-2xl sm:text-3xl font-bold text-white">AI</div>
-                        <div class="text-xs sm:text-sm text-primary-200/80 mt-1">智能分析</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ============================================================ -->
-    <!-- 核心功能 -->
-    <!-- ============================================================ -->
-    <section id="features" class="py-20 bg-slate-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <span class="inline-block text-xs font-semibold text-primary-600 bg-primary-50 px-4 py-1.5 rounded-full mb-4">核心能力</span>
-                <h2 class="text-3xl sm:text-4xl font-bold text-slate-800">全方位的智能法律支持</h2>
-                <p class="mt-4 text-slate-500 max-w-2xl mx-auto">基于先进的 AI 检索与生成技术，为您提供精准、专业的法律案例分析与咨询</p>
-            </div>
-
-            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- 功能 1 -->
-                <div class="feature-card bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
-                    <div class="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center mb-4">
-                        <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.3-4.3"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-lg font-semibold text-slate-800 mb-2">智能案例检索</h3>
-                    <p class="text-sm text-slate-500 leading-relaxed">基于语义理解的混合检索技术，精准匹配您所需的法律案例与裁判要旨</p>
-                </div>
-
-                <!-- 功能 2 -->
-                <div class="feature-card bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
-                    <div class="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center mb-4">
-                        <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-lg font-semibold text-slate-800 mb-2">AI 法律咨询</h3>
-                    <p class="text-sm text-slate-500 leading-relaxed">以最高人民法院指导性案例为依据，提供专业的法律分析与建议</p>
-                </div>
-
-                <!-- 功能 3 -->
-                <div class="feature-card bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
-                    <div class="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center mb-4">
-                        <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-lg font-semibold text-slate-800 mb-2">知识库管理</h3>
-                    <p class="text-sm text-slate-500 leading-relaxed">涵盖最高人民法院指导性案例、检例等权威法律知识体系</p>
-                </div>
-
-                <!-- 功能 4 -->
-                <div class="feature-card bg-white rounded-2xl p-6 shadow-sm border border-slate-100">
-                    <div class="w-12 h-12 bg-primary-50 rounded-xl flex items-center justify-center mb-4">
-                        <svg class="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                            <path d="M12 20V10"/><path d="M18 20V5"/><path d="M6 20v-4"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-lg font-semibold text-slate-800 mb-2">多维度分析</h3>
-                    <p class="text-sm text-slate-500 leading-relaxed">综合多篇相关案例进行对比分析，提供全面、立体的法律视角</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ============================================================ -->
-    <!-- 使用流程 -->
-    <!-- ============================================================ -->
-    <section id="how-it-works" class="py-20 bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16">
-                <span class="inline-block text-xs font-semibold text-primary-600 bg-primary-50 px-4 py-1.5 rounded-full mb-4">使用流程</span>
-                <h2 class="text-3xl sm:text-4xl font-bold text-slate-800">三步获取法律分析</h2>
-                <p class="mt-4 text-slate-500 max-w-2xl mx-auto">简单三步，即可获得基于权威案例的专业法律分析</p>
-            </div>
-
-            <div class="grid md:grid-cols-3 gap-8 lg:gap-12 max-w-4xl mx-auto">
-                <!-- 步骤 1 -->
-                <div class="text-center">
-                    <div class="w-16 h-16 hero-gradient rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg shadow-primary-200">
-                        <span class="text-2xl font-bold text-white">1</span>
-                    </div>
-                    <h3 class="text-lg font-semibold text-slate-800 mb-2">描述您的法律问题</h3>
-                    <p class="text-sm text-slate-500 leading-relaxed">用自然语言描述您遇到的法律问题或纠纷场景，尽可能提供关键细节</p>
-                </div>
-
-                <!-- 箭头（桌面端） -->
-                <div class="hidden md:flex items-center justify-center">
-                    <svg class="w-8 h-8 text-primary-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-                    </svg>
-                </div>
-
-                <!-- 步骤 2 -->
-                <div class="text-center">
-                    <div class="w-16 h-16 hero-gradient rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg shadow-primary-200">
-                        <span class="text-2xl font-bold text-white">2</span>
-                    </div>
-                    <h3 class="text-lg font-semibold text-slate-800 mb-2">AI 检索与分析</h3>
-                    <p class="text-sm text-slate-500 leading-relaxed">系统自动检索知识库中匹配的指导性案例，并进行多维度智能分析</p>
-                </div>
-
-                <!-- 箭头（桌面端） -->
-                <div class="hidden md:flex items-center justify-center">
-                    <svg class="w-8 h-8 text-primary-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-                    </svg>
-                </div>
-
-                <!-- 步骤 3 -->
-                <div class="text-center">
-                    <div class="w-16 h-16 hero-gradient rounded-2xl flex items-center justify-center mx-auto mb-5 shadow-lg shadow-primary-200">
-                        <span class="text-2xl font-bold text-white">3</span>
-                    </div>
-                    <h3 class="text-lg font-semibold text-slate-800 mb-2">获得专业回答</h3>
-                    <p class="text-sm text-slate-500 leading-relaxed">查看基于案例的法律分析，包含相关法条、裁判要旨与综合建议</p>
-                </div>
-            </div>
-
-            <!-- 底部 CTA -->
-            <div class="text-center mt-12">
-                <a href="#chat-section"
-                   class="inline-flex items-center gap-2 btn-primary text-white font-medium px-6 py-3 rounded-xl shadow-lg">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
-                    </svg>
-                    开始咨询
-                </a>
-            </div>
-        </div>
-    </section>
-
-    <!-- ============================================================ -->
-    <!-- 聊天区域（含会话侧边栏） -->
-    <!-- ============================================================ -->
-    <section id="chat-section" class="bg-slate-50 border-t border-slate-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <!-- 区域标题 -->
-            <div class="text-center mb-8">
-                <span class="inline-block text-xs font-semibold text-primary-600 bg-primary-50 px-4 py-1.5 rounded-full mb-3">在线咨询</span>
-                <h2 class="text-2xl sm:text-3xl font-bold text-slate-800">智能法律咨询助手</h2>
-                <p class="mt-2 text-sm text-slate-500">描述您的法律问题，AI 助手将为您检索相关案例并提供专业分析</p>
-            </div>
-
-            <!-- 聊天主容器 -->
-            <div class="bg-white rounded-2xl shadow-lg border border-slate-200 overflow-hidden max-w-5xl mx-auto" style="height: 75vh; min-height: 500px;">
-                <div class="flex h-full">
-                    <!-- 侧边栏遮罩（移动端） -->
-                    <div id="sidebar-overlay" class="fixed inset-0 bg-black/30 z-40 hidden lg:hidden" onclick="toggleSidebar()"></div>
-
-                    <!-- ============================================ -->
-                    <!-- 会话侧边栏 -->
-                    <!-- ============================================ -->
-                    <div id="session-sidebar"
-                         class="sidebar-panel w-72 lg:w-64 xl:w-72 bg-white border-r border-slate-200 flex flex-col shrink-0
-                                fixed lg:static inset-y-0 left-0 z-50 lg:z-auto
-                                -translate-x-full lg:translate-x-0 transition-transform duration-300">
-
-                        <!-- 侧边栏头部 -->
-                        <div class="p-4 border-b border-slate-100">
-                            <div class="flex items-center justify-between mb-3">
-                                <h3 class="text-sm font-semibold text-slate-700">对话历史</h3>
-                                <!-- 关闭按钮（移动端） -->
-                                <button class="lg:hidden p-1 rounded hover:bg-slate-100 text-slate-400" onclick="toggleSidebar()">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
-                                    </svg>
-                                </button>
-                            </div>
-                            <!-- 新建会话按钮 -->
-                            <button id="new-session-btn"
-                                    class="w-full flex items-center justify-center gap-2 bg-primary-50 hover:bg-primary-100 text-primary-700 text-sm font-medium px-4 py-2.5 rounded-xl transition-colors">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
-                                </svg>
-                                新建对话
+                        <!-- Suggested queries -->
+                        <div class="grid gap-3 text-left">
+                            <p class="text-xs text-ink-300 font-medium tracking-wider uppercase mb-1">建议咨询方向</p>
+                            <button onclick="tryExample('销售有毒有害食品的刑事责任如何认定？')"
+                                    class="suggest-card w-full text-left bg-white border border-paper-300 rounded-xl px-4 py-3.5 text-sm text-ink-700 hover:border-pine/30 transition-all group">
+                                <span class="text-pine text-xs font-medium">刑事</span>
+                                <span class="ml-2">销售有毒有害食品的刑事责任如何认定？</span>
+                                <span class="float-right text-ink-200 group-hover:text-pine-300 transition-colors">↗</span>
+                            </button>
+                            <button onclick="tryExample('合同纠纷中违约金过高如何调整？')"
+                                    class="suggest-card w-full text-left bg-white border border-paper-300 rounded-xl px-4 py-3.5 text-sm text-ink-700 hover:border-pine/30 transition-all group">
+                                <span class="text-pine text-xs font-medium">民事</span>
+                                <span class="ml-2">合同纠纷中违约金过高如何调整？</span>
+                                <span class="float-right text-ink-200 group-hover:text-pine-300 transition-colors">↗</span>
+                            </button>
+                            <button onclick="tryExample('指导案例24号涉及什么法律问题？')"
+                                    class="suggest-card w-full text-left bg-white border border-paper-300 rounded-xl px-4 py-3.5 text-sm text-ink-700 hover:border-pine/30 transition-all group">
+                                <span class="text-pine text-xs font-medium">案例</span>
+                                <span class="ml-2">指导案例24号涉及什么法律问题？</span>
+                                <span class="float-right text-ink-200 group-hover:text-pine-300 transition-colors">↗</span>
                             </button>
                         </div>
 
-                        <!-- 会话列表 -->
-                        <div id="session-list" class="flex-1 overflow-y-auto session-scroll p-2 space-y-1">
-                            <!-- 由 JS 动态渲染 -->
-                            <div class="flex items-center justify-center h-full text-slate-400 text-sm">
-                                <div class="text-center">
-                                    <svg class="w-8 h-8 mx-auto mb-2 text-slate-300 animate-pulse" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                        <circle cx="12" cy="12" r="10"/><path d="M16 12H8"/>
-                                    </svg>
-                                    加载中...
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- ============================================ -->
-                    <!-- 主聊天区域 -->
-                    <!-- ============================================ -->
-                    <div class="flex-1 flex flex-col min-w-0">
-                        <!-- 聊天头部 -->
-                        <div class="flex items-center justify-between px-5 py-3 border-b border-slate-100 bg-white shrink-0">
-                            <div class="flex items-center gap-3">
-                                <!-- 侧边栏切换（移动端） -->
-                                <button id="sidebar-toggle" class="lg:hidden p-1.5 rounded-lg hover:bg-slate-100 text-slate-500" onclick="toggleSidebar()">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
-                                    </svg>
-                                </button>
-                                <div class="w-8 h-8 hero-gradient rounded-lg flex items-center justify-center">
-                                    <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
-                                    </svg>
-                                </div>
-                                <div>
-                                    <span class="text-sm font-semibold text-slate-700">法律咨询助手</span>
-                                    <span class="text-xs text-emerald-500 ml-2">● 在线</span>
-                                </div>
-                            </div>
-                            <span id="session-id-display" class="text-xs text-slate-400 hidden sm:inline"></span>
-                        </div>
-
-                        <!-- 消息展示区 -->
-                        <div id="chat-messages" class="flex-1 overflow-y-auto p-5 chat-scroll bg-slate-50/50 space-y-4">
-                            <!-- 欢迎消息 -->
-                            <div class="text-center py-12" id="welcome-message">
-                                <div class="w-16 h-16 bg-primary-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                                    <svg class="w-8 h-8 text-primary-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                                        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
-                                    </svg>
-                                </div>
-                                <h3 class="text-lg font-semibold text-slate-700 mb-2">欢迎来到法智通</h3>
-                                <p class="text-sm text-slate-400 max-w-sm mx-auto">请先新建一个对话，然后描述您的法律问题<br/>如：销售有毒有害食品会被判几年？</p>
-                                <button onclick="createNewSession()"
-                                        class="mt-4 inline-flex items-center gap-2 btn-primary text-white text-sm font-medium px-5 py-2.5 rounded-xl shadow-lg">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
-                                    </svg>
-                                    新建对话
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- 输入区域 -->
-                        <div class="border-t border-slate-200 bg-white p-4 shrink-0">
-                            <div class="flex items-end gap-3">
-                                <div class="flex-1 relative">
-                                    <textarea id="chat-input"
-                                              class="chat-input w-full resize-none rounded-xl border border-slate-200 px-4 py-3 pr-12 text-sm
-                                                     focus:outline-none focus:border-primary-400 transition-colors"
-                                              rows="1"
-                                              placeholder="输入您的法律问题..."
-                                              oninput="autoResizeInput(this)"
-                                              onkeydown="handleKeyDown(event)"></textarea>
-                                </div>
-                                <button id="send-btn"
-                                        onclick="sendMessage()"
-                                        class="btn-primary text-white p-3 rounded-xl shadow-lg shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
-                                        disabled>
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
-                                    </svg>
-                                </button>
-                            </div>
-                            <p class="text-xs text-slate-400 mt-2 pl-1">按 Enter 发送，Shift+Enter 换行</p>
-                        </div>
+                        <button onclick="createNewSession()"
+                                class="mt-8 inline-flex items-center gap-2 bg-pine hover:bg-pine-600 text-white text-sm font-medium px-6 py-3 rounded-xl transition-all duration-200 hover:shadow-lg hover:shadow-pine/20">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" d="M12 5v14m-7-7h14"/>
+                            </svg>
+                            开始新对话
+                        </button>
                     </div>
                 </div>
             </div>
-        </div>
-    </section>
 
-    <!-- ============================================================ -->
-    <!-- 页脚 -->
-    <!-- ============================================================ -->
-    <footer class="bg-slate-900 text-slate-400 py-12">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-10">
-                <!-- 品牌 -->
-                <div class="sm:col-span-2 lg:col-span-1">
-                    <div class="flex items-center gap-2 mb-4">
-                        <svg class="w-6 h-6 text-primary-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 2v20M4 6l8 4 8-4M6 10v8a4 4 0 0 0 8 0v-8"/>
-                        </svg>
-                        <span class="text-lg font-bold text-white">法智通</span>
+            <!-- Input area -->
+            <div class="shrink-0 bg-white border-t border-paper-300">
+                <div class="px-4 py-3.5">
+                    <div class="chat-input-area flex items-end gap-3 bg-paper-100 border border-paper-300 rounded-2xl px-4 py-2.5 transition-all duration-200 max-w-3xl mx-auto">
+                        <textarea id="chat-input"
+                                  class="flex-1 resize-none bg-transparent text-sm text-ink-800 placeholder-ink-300 py-1.5 focus:outline-none max-h-32"
+                                  rows="1"
+                                  placeholder="描述您的法律问题…"
+                                  oninput="onInputChange(this)"
+                                  onkeydown="onInputKeydown(event)"
+                                  disabled></textarea>
+                        <button id="send-btn"
+                                onclick="sendMessage()"
+                                class="btn-send shrink-0 bg-pine text-white p-2.5 rounded-xl disabled:opacity-30 disabled:cursor-not-allowed disabled:hover:bg-pine disabled:hover:scale-100"
+                                disabled>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M12 5l7 7-7 7"/>
+                            </svg>
+                        </button>
                     </div>
-                    <p class="text-sm leading-relaxed">基于 AI 的智能法律案例咨询平台，致力于为用户提供专业、准确的法律案例检索与分析服务。</p>
-                </div>
-                <!-- 快速链接 -->
-                <div>
-                    <h4 class="text-sm font-semibold text-white mb-4">快速链接</h4>
-                    <ul class="space-y-2 text-sm">
-                        <li><a href="#features" class="hover:text-white transition-colors">核心功能</a></li>
-                        <li><a href="#how-it-works" class="hover:text-white transition-colors">使用流程</a></li>
-                        <li><a href="#chat-section" class="hover:text-white transition-colors">开始咨询</a></li>
-                    </ul>
-                </div>
-                <!-- 功能 -->
-                <div>
-                    <h4 class="text-sm font-semibold text-white mb-4">功能</h4>
-                    <ul class="space-y-2 text-sm">
-                        <li class="text-slate-500">智能案例检索</li>
-                        <li class="text-slate-500">AI 法律分析</li>
-                        <li class="text-slate-500">多维度对比</li>
-                    </ul>
-                </div>
-                <!-- 联系 -->
-                <div>
-                    <h4 class="text-sm font-semibold text-white mb-4">免责声明</h4>
-                    <p class="text-xs leading-relaxed text-slate-500">本平台提供的法律分析仅供参考，不构成正式的法律意见。如需法律帮助，请咨询专业律师。</p>
+                    <p class="text-[11px] text-ink-300 text-center mt-2.5">Enter 发送 · Shift+Enter 换行 · 内容由AI生成，仅供参考</p>
                 </div>
             </div>
-            <div class="border-t border-slate-800 pt-8 text-center text-sm text-slate-600">
-                &copy; 2026 法智通 · 智能法律案例咨询平台. All rights reserved.
-            </div>
-        </div>
-    </footer>
+        </main>
+    </div>
 
     <!-- ============================================================ -->
     <!-- JavaScript -->
     <!-- ============================================================ -->
     <script>
     /**
-     * ============================================================
-     * 法律咨询前端 — 主逻辑
-     * - 会话管理（新建、切换、列表）
-     * - 消息收发
-     * - UI 状态管理
-     * ============================================================
+     * 法智通 — 前端逻辑
+     * 会话管理 · 认证 · SSE 流式聊天
      */
+    'use strict';
 
-    // ── 全局状态 ──
+    // ── State ──
     const STATE = {
         currentSessionId: null,
         sessions: [],
@@ -617,136 +418,125 @@
         streamController: null,
     };
 
-    // ── API 基础路径 ──
     const API_BASE = window.location.origin;
 
-    // ── DOM 引用 ──
-    const $ = (sel) => document.querySelector(sel);
-    const $$ = (sel) => document.querySelectorAll(sel);
+    // ── DOM refs ──
+    const $  = s => document.querySelector(s);
+    const $$ = s => document.querySelectorAll(s);
 
-    const chatMessages = document.getElementById('chat-messages');
-    const chatInput = document.getElementById('chat-input');
-    const sendBtn = document.getElementById('send-btn');
-    const sessionList = document.getElementById('session-list');
-    const welcomeMsg = document.getElementById('welcome-message');
-    const newSessionBtn = document.getElementById('new-session-btn');
-    const sessionIdDisplay = document.getElementById('session-id-display');
-    const sidebarToggle = document.getElementById('sidebar-toggle');
-    const sidebarOverlay = document.getElementById('sidebar-overlay');
-    const sidebarPanel = document.getElementById('session-sidebar');
-    const authLoggedOut = document.getElementById('auth-logged-out');
-    const authLoggedIn = document.getElementById('auth-logged-in');
-    const authUsername = document.getElementById('auth-username');
-    const authPassword = document.getElementById('auth-password');
-    const authStatus = document.getElementById('auth-status');
-    const loginBtn = document.getElementById('login-btn');
-    const registerBtn = document.getElementById('register-btn');
-    const logoutBtn = document.getElementById('logout-btn');
+    const chatMessages  = $('#chat-messages');
+    const chatInput     = $('#chat-input');
+    const sendBtn       = $('#send-btn');
+    const sessionList   = $('#session-list');
+    const welcomeMsg    = $('#welcome-message');
+    const newSessionBtn = $('#new-session-btn');
+    const sessionIdDisp = $('#session-id-display');
+    const sidebar       = $('#sidebar');
+    const overlay       = $('#sidebar-overlay');
 
-    // ── 工具函数 ──
+    // ── Sidebar ──
+    function openSidebar() {
+        sidebar.classList.remove('-translate-x-full');
+        overlay.classList.remove('hidden');
+    }
+    function closeSidebar() {
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+    }
 
-    function autoResizeInput(el) {
+    function closeSidebarOnMobile() {
+        if (window.innerWidth < 1024) closeSidebar();
+    }
+
+    // ── Input ──
+    function onInputChange(el) {
         el.style.height = 'auto';
-        el.style.height = Math.min(el.scrollHeight, 120) + 'px';
-        // 输入框有内容时启用发送按钮
+        el.style.height = Math.min(el.scrollHeight, 128) + 'px';
         sendBtn.disabled = !el.value.trim() || STATE.isLoading;
     }
 
-    function handleKeyDown(e) {
+    function onInputKeydown(e) {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
             sendMessage();
         }
     }
 
-    function toggleSidebar() {
-        const isOpen = !sidebarPanel.classList.contains('-translate-x-full');
-        if (isOpen) {
-            sidebarPanel.classList.add('-translate-x-full');
-            sidebarOverlay.classList.add('hidden');
-        } else {
-            sidebarPanel.classList.remove('-translate-x-full');
-            sidebarOverlay.classList.remove('hidden');
-        }
-    }
-
-    // 移动端自动关闭侧栏
-    function closeSidebarOnMobile() {
-        if (window.innerWidth < 1024) {
-            sidebarPanel.classList.add('-translate-x-full');
-            sidebarOverlay.classList.add('hidden');
-        }
-    }
-
     function scrollToBottom() {
-        setTimeout(() => {
+        requestAnimationFrame(() => {
             chatMessages.scrollTop = chatMessages.scrollHeight;
-        }, 50);
+        });
     }
 
     function formatTime() {
-        const now = new Date();
-        return now.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+        return new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
     }
 
-    // ── API 调用 ──
-
-    function buildAuthHeaders(extra = {}) {
-        return STATE.token
-            ? { ...extra, 'Authorization': `Bearer ${STATE.token}` }
-            : { ...extra };
+    // ── Auth helpers ──
+    function authHeaders(extra) {
+        return STATE.token ? { ...extra, Authorization: `Bearer ${STATE.token}` } : { ...extra };
     }
 
-    function resetConversationState() {
+    // ── Auth UI ──
+    function updateAuthUI() {
+        const loggedIn = Boolean(STATE.token);
+        const user = STATE.username || '';
+
+        // Sidebar auth panels
+        const outDiv = $('#sidebar-auth-logged-out');
+        const inDiv  = $('#sidebar-auth-logged-in');
+        if (outDiv) outDiv.classList.toggle('hidden', loggedIn);
+        if (inDiv)  inDiv.classList.toggle('hidden', !loggedIn);
+
+        const nameDisp = $('#sidebar-username-display');
+        const avatar   = $('#sidebar-avatar-letter');
+        if (nameDisp) nameDisp.textContent = loggedIn ? user : '';
+        if (avatar)   avatar.textContent   = loggedIn ? (user[0] || '?').toUpperCase() : '?';
+
+        // Controls
+        newSessionBtn.disabled = !loggedIn;
+        chatInput.disabled     = !loggedIn;
+        if (!loggedIn) chatInput.placeholder = '请先登录后开始咨询';
+    }
+
+    function clearLoginState(msg) {
+        localStorage.removeItem('legal_api_token');
+        localStorage.removeItem('legal_username');
+        STATE.token = '';
+        STATE.username = '';
+        // Clear all password fields
+        $$('input[type="password"]').forEach(el => el.value = '');
+        // Reset conversation
         if (STATE.streamController) STATE.streamController.abort();
         STATE.streamController = null;
         STATE.isLoading = false;
         STATE.currentSessionId = null;
         STATE.sessions = [];
         STATE.messages = [];
-        sessionIdDisplay.textContent = '未选择';
+        sessionIdDisp.textContent = '';
         renderSessionList();
         renderMessages();
-    }
-
-    function updateAuthUI() {
-        const loggedIn = Boolean(STATE.token);
-        authLoggedOut.classList.toggle('hidden', loggedIn);
-        authLoggedIn.classList.toggle('hidden', !loggedIn);
-        authStatus.textContent = loggedIn ? `已登录：${STATE.username}` : '';
-        newSessionBtn.disabled = !loggedIn;
-        chatInput.disabled = !loggedIn;
-        if (!loggedIn) chatInput.placeholder = '请先在右上角注册或登录';
-    }
-
-    function clearLoginState(message) {
-        localStorage.removeItem('legal_api_token');
-        localStorage.removeItem('legal_username');
-        localStorage.removeItem('legal_user_label');
-        STATE.token = '';
-        STATE.username = '';
-        authPassword.value = '';
-        resetConversationState();
         updateAuthUI();
-        if (message) alert(message);
+        if (msg) alert(msg);
     }
 
     async function responseError(resp) {
         const payload = await resp.json().catch(() => ({}));
-        const messages = {
+        const map = {
             401: '登录已失效，请重新登录。',
-            404: '请求的会话不存在，或您无权访问。',
+            404: '会话不存在或无权访问。',
             413: '请求内容过大，请缩短问题后重试。',
             429: '请求过于频繁，请稍后再试。',
         };
-        const error = new Error(messages[resp.status] || payload.error || `请求失败（HTTP ${resp.status}）`);
-        error.status = resp.status;
-        if (resp.status === 401) clearLoginState(messages[401]);
-        return error;
+        const err = new Error(map[resp.status] || payload.error || `请求失败（HTTP ${resp.status}）`);
+        err.status = resp.status;
+        if (resp.status === 401) clearLoginState(map[401]);
+        return err;
     }
 
+    // ── API ──
     async function apiGet(url) {
-        const resp = await fetch(API_BASE + url, { headers: buildAuthHeaders() });
+        const resp = await fetch(API_BASE + url, { headers: authHeaders() });
         if (!resp.ok) throw await responseError(resp);
         return resp.json();
     }
@@ -754,19 +544,18 @@
     async function apiPost(url, body) {
         const resp = await fetch(API_BASE + url, {
             method: 'POST',
-            headers: buildAuthHeaders({ 'Content-Type': 'application/json' }),
+            headers: authHeaders({ 'Content-Type': 'application/json' }),
             body: JSON.stringify(body),
         });
-        if (!resp.ok) {
-            throw await responseError(resp);
-        }
+        if (!resp.ok) throw await responseError(resp);
         return resp.json();
     }
 
     async function submitAuth(action) {
-        const username = authUsername.value.trim();
-        const password = authPassword.value;
+        const username = ($('#sidebar-username')?.value || '').trim();
+        const password = ($('#sidebar-password')?.value || '');
         if (!username || !password) return alert('请输入账号和密码。');
+
         const resp = await fetch(`${API_BASE}/api/auth/${action}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -775,105 +564,82 @@
         const data = await resp.json().catch(() => ({}));
         if (!resp.ok) {
             const known = {
-                400: '账号格式不正确，或密码长度不符合要求。',
+                400: '账号格式或密码长度不正确。',
                 401: '账号或密码错误。',
-                409: '该账号已经注册，请直接登录。',
+                409: '该账号已注册，请直接登录。',
                 429: '尝试次数过多，请稍后再试。',
             };
-            return alert(known[resp.status] || data.error || '操作失败，请稍后重试。');
+            return alert(known[resp.status] || data.error || '操作失败。');
         }
-        resetConversationState();
+
+        // Reset state
+        if (STATE.streamController) STATE.streamController.abort();
+        STATE.streamController = null;
+        STATE.isLoading = false;
+        STATE.currentSessionId = null;
+        STATE.sessions = [];
+        STATE.messages = [];
+        sessionIdDisp.textContent = '';
+
         STATE.token = data.token;
         STATE.username = data.username;
         localStorage.setItem('legal_api_token', STATE.token);
         localStorage.setItem('legal_username', STATE.username);
-        authPassword.value = '';
         updateAuthUI();
+        renderMessages();
         await fetchSessions();
         if (STATE.sessions.length) await switchSession(String(STATE.sessions[0].id));
     }
 
-    // ── 获取会话列表 ──
-
+    // ── Sessions ──
     async function fetchSessions() {
-        if (!STATE.token) {
-            STATE.sessions = [];
-            renderSessionList();
-            return;
-        }
+        if (!STATE.token) { STATE.sessions = []; renderSessionList(); return; }
         try {
             const data = await apiGet('/api/sessions');
             STATE.sessions = data.sessions || [];
             renderSessionList();
         } catch (e) {
-            console.error('获取会话列表失败:', e);
-            sessionList.replaceChildren();
-            const box = document.createElement('div');
-            box.className = 'text-center py-8 text-red-400 text-sm';
-            const message = document.createElement('p');
-            message.textContent = e.message || '无法连接服务器';
-            const retry = document.createElement('button');
-            retry.className = 'text-primary-500 hover:underline mt-2';
-            retry.textContent = '重试';
-            retry.addEventListener('click', fetchSessions);
-            box.append(message, retry);
-            sessionList.appendChild(box);
+            console.error('获取会话失败:', e);
+            sessionList.innerHTML =
+                `<div class="text-center py-8 text-ink-300 text-sm">
+                    <p>${escapeHtml(e.message || '无法连接')}</p>
+                    <button class="text-pine-300 hover:underline mt-2 text-xs" onclick="fetchSessions()">重试</button>
+                </div>`;
         }
     }
-
-    // ── 渲染会话列表 ──
 
     function renderSessionList() {
         if (!STATE.sessions.length) {
-            sessionList.innerHTML = `
-                <div class="text-center py-8 text-slate-400 text-sm">
-                    <svg class="w-8 h-8 mx-auto mb-2 text-slate-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+            sessionList.innerHTML =
+                `<div class="text-center py-10 text-ink-300 text-sm">
+                    <svg class="w-6 h-6 mx-auto mb-2 opacity-30" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.86 9.86 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
                     </svg>
-                    暂无对话记录<br/>
-                    <span class="text-xs text-slate-300">点击上方"新建对话"开始</span>
+                    暂无对话<br><span class="text-[11px] opacity-50">点击上方按钮开始</span>
                 </div>`;
             return;
         }
-
-        sessionList.replaceChildren();
+        sessionList.innerHTML = '';
         STATE.sessions.forEach(s => {
-            const isActive = s.id === STATE.currentSessionId;
-            const item = document.createElement('div');
-            item.className = `session-item ${isActive ? 'active' : ''} rounded-xl px-3 py-2.5 cursor-pointer`;
-            const preview = document.createElement('p');
-            preview.className = 'text-sm text-slate-700 truncate font-medium';
-            preview.textContent = s.preview || '(空会话)';
-            const count = document.createElement('p');
-            count.className = 'text-xs text-slate-400 mt-0.5';
-            count.textContent = `${Number(s.message_count) || 0} 条消息`;
-            item.append(preview, count);
-            item.addEventListener('click', () => switchSession(String(s.id)));
-            sessionList.appendChild(item);
+            const active = s.id === STATE.currentSessionId;
+            const el = document.createElement('div');
+            el.className = `session-item rounded-lg px-3 py-2.5 cursor-pointer ${active ? 'active' : ''}`;
+            el.innerHTML = `
+                <p class="text-sm text-white/80 truncate font-medium">${escapeHtml(s.preview || '(空会话)')}</p>
+                <p class="text-[11px] text-ink-300 mt-0.5">${Number(s.message_count) || 0} 条消息</p>
+            `;
+            el.addEventListener('click', () => switchSession(String(s.id)));
+            sessionList.appendChild(el);
         });
     }
 
-    // ── 简易 HTML 转义 ──
-
-    function escapeHtml(str) {
-        if (!str) return '(空会话)';
-        const div = document.createElement('div');
-        div.textContent = str;
-        return div.textContent;
-    }
-
-    // ── 切换会话 ──
-
     async function switchSession(sessionId) {
         if (sessionId === STATE.currentSessionId) return;
-
         STATE.currentSessionId = sessionId;
         STATE.messages = [];
         renderSessionList();
-        sessionIdDisplay.textContent = sessionId.slice(0, 8) + '...';
+        sessionIdDisp.textContent = sessionId.slice(0, 8) + '…';
         closeSidebarOnMobile();
-
-        // 加载消息
         showLoadingMessages();
         try {
             const data = await apiGet(`/api/sessions/${encodeURIComponent(sessionId)}/messages`);
@@ -881,11 +647,9 @@
             renderMessages();
         } catch (e) {
             console.error('加载消息失败:', e);
-            showErrorMessages('加载消息失败，请重试');
+            showErrorMessages('加载失败，请重试');
         }
     }
-
-    // ── 新建会话 ──
 
     async function createNewSession() {
         if (!STATE.token) return alert('请先登录。');
@@ -893,56 +657,205 @@
             const data = await apiPost('/api/sessions', {});
             STATE.currentSessionId = data.session_id;
             STATE.messages = [];
-            await fetchSessions(); // 刷新列表
+            await fetchSessions();
             renderMessages();
-            sessionIdDisplay.textContent = data.session_id.slice(0, 8) + '...';
+            sessionIdDisp.textContent = data.session_id.slice(0, 8) + '…';
+            chatInput.disabled = false;
             chatInput.focus();
             closeSidebarOnMobile();
         } catch (e) {
-            console.error('新建会话失败:', e);
-            alert('创建会话失败，请确认服务器是否在运行');
+            console.error('创建会话失败:', e);
+            alert('创建会话失败，请检查服务器状态');
         }
     }
 
-    // ── 发送消息 ──
+    function tryExample(query) {
+        chatInput.value = query;
+        chatInput.dispatchEvent(new Event('input'));
+        chatInput.focus();
+        // Prompt user to create session first if not logged in
+        if (!STATE.token) {
+            alert('请先在左侧登录。');
+        } else if (!STATE.currentSessionId) {
+            createNewSession().then(() => {
+                if (STATE.currentSessionId) {
+                    chatInput.value = query;
+                    chatInput.dispatchEvent(new Event('input'));
+                    sendMessage();
+                }
+            });
+        } else {
+            sendMessage();
+        }
+    }
 
+    // ── Messages ──
+    function renderMessages() {
+        const w = $('#welcome-message');
+        if (w) w.remove();
+        chatMessages.querySelectorAll('.message-row').forEach(el => el.remove());
+
+        if (!STATE.messages.length) {
+            showWelcome();
+            return;
+        }
+        STATE.messages.forEach(m => addMessageBubble(m.role, m.content));
+        scrollToBottom();
+    }
+
+    function showWelcome() {
+        chatMessages.innerHTML = `
+            <div id="welcome-message" class="flex flex-col items-center justify-center min-h-full px-6 py-16">
+                <div class="max-w-lg w-full text-center animate-reveal">
+                    <div class="mb-8">
+                        <svg class="w-12 h-12 mx-auto text-pine-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="2" x2="12" y2="22"/>
+                            <path d="M3 7l4.5 2.5L12 7l4.5 2.5L21 7"/>
+                            <path d="M5 10.5v6a3 3 0 0 0 5.5 0v-6"/>
+                            <path d="M13.5 10.5v6a3 3 0 0 0 5.5 0v-6"/>
+                        </svg>
+                    </div>
+                    <h2 class="font-serif text-2xl font-bold text-ink-800 mb-3 tracking-tight">新对话已就绪</h2>
+                    <p class="text-ink-400 text-sm">在下方输入您的法律问题，开始咨询</p>
+                </div>
+            </div>`;
+    }
+
+    function showLoadingMessages() {
+        const w = $('#welcome-message'); if (w) w.remove();
+        chatMessages.querySelectorAll('.message-row').forEach(el => el.remove());
+        chatMessages.innerHTML = `
+            <div class="flex items-center justify-center min-h-full text-ink-300 text-sm">
+                <div class="text-center">
+                    <svg class="w-6 h-6 mx-auto mb-2 animate-spin opacity-30" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10" stroke-dasharray="31.4 31.4" stroke-linecap="round"/>
+                    </svg>
+                    加载中…
+                </div>
+            </div>`;
+    }
+
+    function showErrorMessages(msg) {
+        const w = $('#welcome-message'); if (w) w.remove();
+        chatMessages.querySelectorAll('.message-row').forEach(el => el.remove());
+        chatMessages.innerHTML = `
+            <div class="flex items-center justify-center min-h-full text-sm">
+                <div class="text-center text-ink-400">
+                    <svg class="w-8 h-8 mx-auto mb-2 text-red-300" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                    ${escapeHtml(msg)}
+                    <button onclick="fetchSessions()" class="block mx-auto mt-2 text-pine hover:underline text-xs">重试</button>
+                </div>
+            </div>`;
+    }
+
+    // ── Message bubbles ──
+    function addMessageBubble(role, content) {
+        const w = $('#welcome-message'); if (w) w.remove();
+        const isUser = role === 'user';
+        const isSystem = role === 'system';
+
+        const row = document.createElement('div');
+        row.className = 'message-row animate-reveal-up';
+
+        if (isUser) {
+            row.innerHTML = `
+                <div class="flex justify-end px-5 py-3">
+                    <div class="max-w-[75%]">
+                        <div class="bg-ink text-white rounded-2xl rounded-br-md px-4 py-3">
+                            <div class="message-body text-sm leading-relaxed whitespace-pre-wrap">${escapeHtml(content)}</div>
+                        </div>
+                        <p class="text-[11px] text-ink-300 mt-1 text-right">${formatTime()}</p>
+                    </div>
+                </div>`;
+        } else if (isSystem) {
+            row.innerHTML = `
+                <div class="flex justify-center px-5 py-3">
+                    <div class="max-w-[85%] bg-amber-50 border border-amber-200 text-amber-800 rounded-xl px-4 py-2.5">
+                        <div class="message-body text-xs leading-relaxed">${renderMarkdown(content)}</div>
+                    </div>
+                </div>`;
+        } else {
+            row.innerHTML = `
+                <div class="flex justify-start px-5 py-3">
+                    <div class="flex gap-3 max-w-[80%]">
+                        <div class="w-8 h-8 rounded-full bg-pine/10 flex items-center justify-center shrink-0 mt-0.5">
+                            <svg class="w-4 h-4 text-pine" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <line x1="12" y1="2" x2="12" y2="22"/>
+                                <path d="M3 7l4.5 2.5L12 7l4.5 2.5L21 7"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <div class="bg-white border border-paper-300 rounded-2xl rounded-tl-md px-4 py-3 shadow-sm">
+                                <div class="message-body text-sm leading-relaxed">${renderMarkdown(content)}</div>
+                            </div>
+                            <p class="text-[11px] text-ink-300 mt-1">${formatTime()}</p>
+                        </div>
+                    </div>
+                </div>`;
+        }
+        chatMessages.appendChild(row);
+    }
+
+    function createStreamingBubble() {
+        const w = $('#welcome-message'); if (w) w.remove();
+        const row = document.createElement('div');
+        row.className = 'message-row animate-reveal-up';
+        row.id = 'streaming-row';
+        row.innerHTML = `
+            <div class="flex justify-start px-5 py-3">
+                <div class="flex gap-3 max-w-[80%]">
+                    <div class="w-8 h-8 rounded-full bg-pine/10 flex items-center justify-center shrink-0 mt-0.5">
+                        <svg class="w-4 h-4 text-pine" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <line x1="12" y1="2" x2="12" y2="22"/>
+                            <path d="M3 7l4.5 2.5L12 7l4.5 2.5L21 7"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <div class="bg-white border border-paper-300 rounded-2xl rounded-tl-md px-4 py-3 shadow-sm">
+                            <div class="stream-content message-body text-sm leading-relaxed"></div>
+                        </div>
+                        <p class="text-[11px] text-ink-300 mt-1">${formatTime()}</p>
+                    </div>
+                </div>
+            </div>`;
+        chatMessages.appendChild(row);
+        return row;
+    }
+
+    // ── Send message ──
     async function sendMessage() {
         if (!STATE.token) return alert('请先登录。');
         const text = chatInput.value.trim();
-        if (!text || STATE.isLoading || !STATE.currentSessionId) {
-            if (!STATE.currentSessionId) {
-                await createNewSession();
-                setTimeout(() => sendMessage(), 100);
-            }
-            return;
+        if (!text || STATE.isLoading) return;
+
+        if (!STATE.currentSessionId) {
+            await createNewSession();
+            if (!STATE.currentSessionId) return;
         }
 
-        // 清空输入
         chatInput.value = '';
         chatInput.style.height = 'auto';
         sendBtn.disabled = true;
 
-        // 添加用户消息
         addMessageBubble('user', text);
         scrollToBottom();
 
         STATE.isLoading = true;
         sendBtn.disabled = true;
 
-        // 创建 assistant 气泡占位
-        removeTypingIndicator();
-        const bubbleDiv = createAssistantBubble('');
+        const row = createStreamingBubble();
+        const contentDiv = row.querySelector('.stream-content');
+        scrollToBottom();
 
         try {
             STATE.streamController = new AbortController();
             const resp = await fetch(API_BASE + '/api/chat/stream', {
                 method: 'POST',
-                headers: buildAuthHeaders({ 'Content-Type': 'application/json' }),
+                headers: authHeaders({ 'Content-Type': 'application/json' }),
                 signal: STATE.streamController.signal,
-                body: JSON.stringify({
-                    message: text,
-                    session_id: STATE.currentSessionId,
-                }),
+                body: JSON.stringify({ message: text, session_id: STATE.currentSessionId }),
             });
 
             if (!resp.ok) throw await responseError(resp);
@@ -950,17 +863,14 @@
 
             const reader = resp.body.getReader();
             const decoder = new TextDecoder();
-            let buffer = '';
-            let fullContent = '';
+            let buffer = '', fullContent = '';
 
             while (true) {
                 const { done, value } = await reader.read();
                 if (done) break;
-
                 buffer += decoder.decode(value, { stream: true });
                 const lines = buffer.split('\n');
-                buffer = lines.pop() || '';  // 保留未完成的行
-
+                buffer = lines.pop() || '';
                 for (const line of lines) {
                     const trimmed = line.trim();
                     if (!trimmed || !trimmed.startsWith('data: ')) continue;
@@ -968,274 +878,122 @@
                         const evt = JSON.parse(trimmed.slice(6));
                         if (evt.type === 'meta') {
                             STATE.currentSessionId = evt.session_id;
-                            sessionIdDisplay.textContent = evt.session_id.slice(0, 8) + '...';
+                            sessionIdDisp.textContent = evt.session_id.slice(0, 8) + '…';
                         } else if (evt.type === 'chunk') {
                             fullContent += evt.content;
-                            // 实时更新气泡内容（延迟渲染markdown，避免闪烁）
-                            const contentDiv = bubbleDiv.querySelector('.stream-content');
-                            if (contentDiv) {
-                                contentDiv.innerHTML = renderMarkdown(fullContent);
-                                scrollToBottom();
-                            }
-                        } else if (evt.type === 'done') {
-                            // 正文已由 chunk 增量拼接；done 仅表示流正常结束。
+                            if (contentDiv) contentDiv.innerHTML = renderMarkdown(fullContent);
+                            scrollToBottom();
                         } else if (evt.type === 'error') {
                             throw new Error(evt.content);
                         }
                     } catch (e) {
-                        // JSON 解析错误跳过
-                        if (e.message.startsWith('服务器错误') || e.message.startsWith('HTTP')) throw e;
+                        if (e.message?.startsWith?.('服务器') || e.message?.startsWith?.('HTTP')) throw e;
                     }
                 }
             }
-
-            // 刷新会话列表
+            row.id = '';
             await fetchSessions();
         } catch (e) {
             if (e.name === 'AbortError') return;
-            console.error('流式对话失败:', e);
-            const contentDiv = bubbleDiv.querySelector('.stream-content');
+            console.error('对话失败:', e);
             if (contentDiv) {
-                contentDiv.innerHTML = '<p class="text-red-500">抱歉，对话失败: ' + escapeHtml(e.message) + '</p>';
+                contentDiv.innerHTML = `<p class="text-red-500">抱歉，对话出错：${escapeHtml(e.message)}</p>`;
             }
-            scrollToBottom();
         } finally {
             STATE.streamController = null;
             STATE.isLoading = false;
             sendBtn.disabled = !chatInput.value.trim();
+            scrollToBottom();
         }
     }
 
-    // ── 创建可增量更新的 assistant 气泡 ──
-
-    function createAssistantBubble(initialContent) {
-        const welcome = document.getElementById('welcome-message');
-        if (welcome) welcome.remove();
-
+    // ── Markdown ──
+    function escapeHtml(str) {
+        if (!str) return '';
         const div = document.createElement('div');
-        div.className = 'message-bubble flex justify-start items-start gap-3';
-
-        div.innerHTML = `
-            <div class="w-8 h-8 hero-gradient rounded-xl flex items-center justify-center shrink-0 mt-1">
-                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
-                </svg>
-            </div>
-            <div class="max-w-[80%]">
-                <div class="bg-white text-slate-700 border border-slate-200 rounded-2xl rounded-tl-md px-4 py-3 shadow-sm">
-                    <div class="stream-content message-content text-sm leading-relaxed whitespace-pre-wrap">${renderMarkdown(initialContent)}</div>
-                </div>
-                <p class="text-xs text-slate-400 mt-1 text-left">${formatTime()}</p>
-            </div>
-        `;
-
-        chatMessages.appendChild(div);
-        return div;
+        div.textContent = str;
+        return div.innerHTML;
     }
-
-    // ── 添加消息气泡 ──
-
-    function addMessageBubble(role, content) {
-        // 移除欢迎消息
-        const welcome = document.getElementById('welcome-message');
-        if (welcome) welcome.remove();
-
-        const isUser = role === 'user';
-        const isSystem = role === 'system';
-
-        const div = document.createElement('div');
-        div.className = `message-bubble flex ${isUser ? 'justify-end' : 'justify-start'} items-start gap-3`;
-
-        div.innerHTML = `
-            ${!isUser ? `
-                <div class="w-8 h-8 ${isSystem ? 'bg-amber-100' : 'hero-gradient'} rounded-xl flex items-center justify-center shrink-0 mt-1">
-                    <svg class="w-4 h-4 ${isSystem ? 'text-amber-600' : 'text-white'}" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        ${isSystem
-                            ? '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'
-                            : '<path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>'
-                        }
-                    </svg>
-                </div>
-            ` : ''}
-            <div class="max-w-[80%] ${isUser ? 'order-first' : ''}">
-                <div class="${isUser
-                    ? 'bg-primary-600 text-white rounded-2xl rounded-tr-md'
-                    : isSystem
-                        ? 'bg-amber-50 text-amber-800 border border-amber-200 rounded-2xl rounded-tl-md'
-                        : 'bg-white text-slate-700 border border-slate-200 rounded-2xl rounded-tl-md'
-                } px-4 py-3 shadow-sm">
-                    <div class="message-content text-sm leading-relaxed whitespace-pre-wrap">${isUser ? escapeHtml(content) : renderMarkdown(content)}</div>
-                </div>
-                <p class="text-xs text-slate-400 mt-1 ${isUser ? 'text-right' : 'text-left'}">${formatTime()}</p>
-            </div>
-            ${isUser ? `
-                <div class="w-8 h-8 bg-primary-100 rounded-xl flex items-center justify-center shrink-0 mt-1">
-                    <svg class="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/>
-                    </svg>
-                </div>
-            ` : ''}
-        `;
-
-        chatMessages.appendChild(div);
-    }
-
-    // ── 简单的 Markdown 渲染（标题、加粗、列表、代码、换行） ──
 
     function renderMarkdown(text) {
         if (!text) return '';
         let html = escapeHtml(text);
 
-        // 将换行转为 <br>（保留段落）
-        html = html.replace(/\n\n/g, '</p><p class="mb-2">');
+        // Paragraphs
+        html = html.replace(/\n\n+/g, '</p><p>');
         html = html.replace(/\n/g, '<br>');
         html = '<p>' + html + '</p>';
 
-        // 加粗 **text**
+        // Bold
         html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
 
-        // 行内代码 `code`
+        // Inline code
         html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
 
-        // 无序列表 - 开头带 * 或 - 的行
-        html = html.replace(/<p>(?:<br>)?\s*[\*\-]\s+(.+?)<\/p>/g, '<li class="ml-4 list-disc">$1</li>');
-        html = html.replace(/(<li[^>]*>.*?<\/li>)/g, match => {
-            // 如果连续多个 <li>，包在 <ul> 里
-            return match;
+        // Headings
+        html = html.replace(/<p>#{3}\s+(.+?)<\/p>/g, '<h4>$1</h4>');
+        html = html.replace(/<p>#{2}\s+(.+?)<\/p>/g, '<h3>$1</h3>');
+        html = html.replace(/<p>#{1}\s+(.+?)<\/p>/g, '<h2>$1</h2>');
+
+        // Unordered list items
+        html = html.replace(/<p>(?:<br>)?\s*[\*\-]\s+(.+?)<\/p>/g, '<li>$1</li>');
+        html = html.replace(/((?:<li>.*?<\/li>\s*)+)/g, '<ul>$1</ul>');
+
+        // Ordered list items
+        html = html.replace(/<p>(?:<br>)?\s*(\d+)[\.\)]\s+(.+?)<\/p>/g, '<li>$2</li>');
+        html = html.replace(/((?:<li>.*?<\/li>\s*)+)/g, (match) => {
+            if (match.includes('<ul>')) return match;
+            return '<ol>$1</ol>';
         });
 
-        // 标题 ### text
-        html = html.replace(/<p>#{3}\s+(.+?)<\/p>/g, '<h4 class="font-semibold mt-3 mb-1">$1</h4>');
-        html = html.replace(/<p>#{2}\s+(.+?)<\/p>/g, '<h3 class="font-semibold mt-3 mb-1">$1</h3>');
-        html = html.replace(/<p>#{1}\s+(.+?)<\/p>/g, '<h2 class="font-semibold mt-3 mb-1">$1</h2>');
+        // Horizontal rule
+        html = html.replace(/<p>-{3,}<\/p>/g, '<hr>');
 
-        // 修复连续 <li> 没有 <ul> 包裹的问题
-        html = html.replace(/((?:<li[^>]*>.*?<\/li>\s*)+)/g, '<ul class="mb-2">$1</ul>');
+        // Blockquote
+        html = html.replace(/<p>&gt;\s*(.+?)<\/p>/g, '<blockquote>$1</blockquote>');
 
-        // 水平线
-        html = html.replace(/<p>-{3,}<\/p>/g, '<hr class="my-3">');
-
-        // 空 <p> 清理
+        // Cleanup
         html = html.replace(/<p><\/p>/g, '');
         html = html.replace(/<p>\s*<\/p>/g, '');
 
-        // 段落前后包裹
-        html = html.replace(/^<p>/, '');
-        html = html.replace(/<\/p>$/, '');
+        // Case citation detection: highlight patterns like 指导案例XX号, 检例第XX号
+        html = html.replace(
+            /(指导案例\s*第?\s*\d+[一-鿿]*号|检例\s*第\s*\d+号|〔\d{4}〕\S+号)/g,
+            '<span class="case-cite">$1</span>'
+        );
 
-        // 如果已经是 <ul> 包裹了，去掉多余空行
         return html || text;
     }
 
-    // ── 渲染消息列表 ──
-
-    function renderMessages() {
-        // 清除消息区（保留欢迎消息作为默认）
-        const welcome = document.getElementById('welcome-message');
-        if (welcome) welcome.remove();
-
-        // 移除所有消息气泡
-        chatMessages.querySelectorAll('.message-bubble').forEach(el => el.remove());
-
-        if (!STATE.messages.length) {
-            // 显示欢迎
-            chatMessages.innerHTML = `
-                <div class="text-center py-12" id="welcome-message">
-                    <div class="w-16 h-16 bg-primary-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-8 h-8 text-primary-500" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
-                            <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-lg font-semibold text-slate-700 mb-2">新对话</h3>
-                    <p class="text-sm text-slate-400">在下方输入您的法律问题，开始咨询</p>
-                </div>
-            `;
-            return;
-        }
-
-        STATE.messages.forEach(msg => {
-            addMessageBubble(msg.role, msg.content);
-        });
-        scrollToBottom();
-    }
-
-    // ── 显示/隐藏加载状态 ──
-
-    function showLoadingMessages() {
-        const welcome = document.getElementById('welcome-message');
-        if (welcome) welcome.remove();
-        chatMessages.querySelectorAll('.message-bubble').forEach(el => el.remove());
-        chatMessages.innerHTML = `
-            <div class="flex items-center justify-center h-full text-slate-400 text-sm">
-                <div class="text-center">
-                    <svg class="w-8 h-8 mx-auto mb-2 text-slate-300 animate-spin" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="10" stroke-dasharray="31.4 31.4" stroke-linecap="round"/>
-                    </svg>
-                    加载中...
-                </div>
-            </div>
-        `;
-    }
-
-    function showErrorMessages(msg) {
-        const welcome = document.getElementById('welcome-message');
-        if (welcome) welcome.remove();
-        chatMessages.querySelectorAll('.message-bubble').forEach(el => el.remove());
-        chatMessages.innerHTML = `
-            <div class="flex items-center justify-center h-full text-slate-400 text-sm">
-                <div class="text-center">
-                    <svg class="w-8 h-8 mx-auto mb-2 text-red-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-                    </svg>
-                    ${msg}
-                    <button onclick="fetchSessions()" class="block mx-auto mt-2 text-primary-500 hover:underline">重试</button>
-                </div>
-            </div>
-        `;
-    }
-
-    function showTypingIndicator() {
-        removeTypingIndicator();
-        const div = document.createElement('div');
-        div.id = 'typing-indicator';
-        div.className = 'message-bubble flex justify-start items-start gap-3';
-        div.innerHTML = `
-            <div class="w-8 h-8 hero-gradient rounded-xl flex items-center justify-center shrink-0 mt-1">
-                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/>
-                </svg>
-            </div>
-            <div class="bg-white border border-slate-200 rounded-2xl rounded-tl-md px-5 py-4 shadow-sm">
-                <div class="flex items-center gap-1.5">
-                    <span class="typing-dot w-2 h-2 bg-primary-400 rounded-full inline-block"></span>
-                    <span class="typing-dot w-2 h-2 bg-primary-400 rounded-full inline-block"></span>
-                    <span class="typing-dot w-2 h-2 bg-primary-400 rounded-full inline-block"></span>
-                </div>
-            </div>
-        `;
-        chatMessages.appendChild(div);
-        scrollToBottom();
-    }
-
-    function removeTypingIndicator() {
-        const el = document.getElementById('typing-indicator');
-        if (el) el.remove();
-    }
-
-    // ── 初始化 ──
-
+    // ── Init ──
     async function init() {
-        authUsername.value = STATE.username;
+        // Fill username if saved
+        const su = $('#sidebar-username');
+        if (su) su.value = STATE.username;
         updateAuthUI();
 
-        loginBtn.addEventListener('click', () => submitAuth('login'));
-        registerBtn.addEventListener('click', () => submitAuth('register'));
-        logoutBtn.addEventListener('click', async () => {
+        // Auth buttons
+        $('#sidebar-login-btn')?.addEventListener('click', () => submitAuth('login'));
+        $('#sidebar-register-btn')?.addEventListener('click', () => submitAuth('register'));
+        $('#sidebar-logout-btn')?.addEventListener('click', async () => {
             try { await apiPost('/api/auth/logout', {}); }
             finally { clearLoginState(); }
         });
 
-        // 浏览器只在内部保存服务端签发的临时令牌，用户无需配置或输入 Token。
+        // Enter key on password field to login
+        $('#sidebar-password')?.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') submitAuth('login');
+        });
+
+        // New session button
+        newSessionBtn.addEventListener('click', createNewSession);
+
+        // Input change
+        chatInput.addEventListener('input', () => {
+            sendBtn.disabled = !chatInput.value.trim() || STATE.isLoading;
+        });
+
+        // Restore session
         if (STATE.token) {
             try {
                 const me = await apiGet('/api/auth/me');
@@ -1243,41 +1001,27 @@
                 localStorage.setItem('legal_username', STATE.username);
                 updateAuthUI();
                 await fetchSessions();
+                if (STATE.sessions.length > 0) {
+                    await switchSession(String(STATE.sessions[0].id));
+                }
             } catch (e) {
                 console.error('恢复登录失败:', e);
             }
         }
 
-        // 如果有会话，自动选中第一个
-        if (STATE.sessions.length > 0) {
-            await switchSession(String(STATE.sessions[0].id));
-        }
-
-        // 绑定新建会话按钮
-        newSessionBtn.addEventListener('click', createNewSession);
-
-        // 监听输入框变化
-        chatInput.addEventListener('input', () => {
-            sendBtn.disabled = !chatInput.value.trim() || STATE.isLoading;
-        });
-
-        // 窗口 resize 时关闭移动端侧栏
+        // Resize handler
         window.addEventListener('resize', () => {
             if (window.innerWidth >= 1024) {
-                sidebarPanel.classList.remove('-translate-x-full');
-                if (sidebarOverlay) sidebarOverlay.classList.add('hidden');
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.add('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
             }
         });
     }
 
-    // 页面加载完成后初始化
     document.addEventListener('DOMContentLoaded', init);
-
-    // ── 移动端菜单 ──
-    document.getElementById('mobile-menu-btn').addEventListener('click', () => {
-        const menu = document.getElementById('mobile-menu');
-        menu.classList.toggle('hidden');
-    });
     </script>
 
 </body>

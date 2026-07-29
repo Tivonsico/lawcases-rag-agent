@@ -60,7 +60,7 @@ class EmbeddingService:
         for attempt in range(2):
             try:
                 resp = requests.post(
-                    self.api_url, headers=headers, json=payload, timeout=(10, 60)
+                    self.api_url, headers=headers, json=payload, timeout=(5, 15)
                 )
                 resp.raise_for_status()
                 data = resp.json()

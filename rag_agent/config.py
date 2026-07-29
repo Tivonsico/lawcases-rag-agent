@@ -95,8 +95,8 @@ BM25_CANDIDATE_K = 200
 DOCUMENT_CANDIDATE_K = 50
 FINAL_TOP_K = 5
 RRF_K = 60
-RRF_WEIGHTS = {"embedding_original": 1.0, "embedding_normalized": 0.5,
-               "bm25_original": 0.2, "exact": 2.0}
+RRF_WEIGHTS = {"embedding_original": 2.0, "embedding_normalized": 0.5,
+               "bm25_original": 0.6, "exact": 2.0}
 
 LLM_API_URL = os.environ.get("LLM_API_URL", "https://api.deepseek.com/v1/chat/completions")
 LLM_API_KEY = os.environ.get("LLM_API_KEY", "")

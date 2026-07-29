@@ -24,9 +24,7 @@ rag_agent/migrate_legacy_indexes.py
 rag_agent/retriever.py
 rag_agent/test_evaluator.py
 rag_agent/vector_store.py
-rag_agent/data/evaluation/ablation_variants.json
-rag_agent/data/evaluation/dev.jsonl
-rag_agent/data/evaluation/test.jsonl
+rag_agent/data/evaluation/evaluation_20.jsonl
 rag_agent/static/index.html
 tests/test_agent_streaming.py
 tests/test_api_security.py

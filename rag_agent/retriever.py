@@ -16,6 +16,17 @@ except ImportError:  # pragma: no cover - direct script compatibility
     from embedding import EmbeddingService
     from vector_store import VectorStore
 
+try:
+    import jieba
+    # 加载 intent 以注册法律词典（既兼容包导入也兼容顶层导入）
+    try:
+        from . import intent as _intent
+    except ImportError:
+        import intent as _intent  # pragma: no cover - direct script
+    _HAVE_JIEBA = True
+except ImportError:
+    _HAVE_JIEBA = False
+
 logger = logging.getLogger(__name__)
 
 
@@ -61,9 +72,13 @@ class BM25Index:
 
     @staticmethod
     def _tokenize(text):
-        return ([text[i:i+2] for i in range(len(text)-1)
-                 if all("\u4e00" <= c <= "\u9fff" for c in text[i:i+2])] +
-                [w.lower() for w in re.findall(r"[a-zA-Z0-9_-]+", text)])
+        # \u4e2d\u6587\u7528 jieba \u5206\u8bcd\uff0c\u66ff\u4ee3\u4e4b\u524d\u7684\u5b57\u7b26\u4e8c\u6298\uff08\u4e8c\u6298\u4ea7\u751f\u5927\u91cf\u4e0d\u5b58\u5728\u4e8e\u8bcd\u5178\u7684\u566a\u58f0\u8bcd\uff09
+        chinese = ([w for w in jieba.lcut(text)
+                    if len(w) > 1 and all("\u4e00" <= c <= "\u9fff" for c in w)]
+                   if _HAVE_JIEBA else [])
+        # \u82f1\u6570 token \u4fdd\u7559\uff08\u6848\u53f7\u3001ID \u7b49\uff09
+        alnum = [w.lower() for w in re.findall(r"[a-zA-Z0-9_-]+", text)]
+        return chinese + alnum
 
     def search(self, query, top_k=BM25_CANDIDATE_K):
         if not self.bm25 or not query.strip(): return []

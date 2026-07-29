@@ -1,13 +1,13 @@
 """Railway WSGI entry point — auto-initializes index on first deploy."""
 import os, sys, logging
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "rag_agent"))
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger(__name__)
 
 # 检测索引是否存在，不存在则从文档重建
-from config import DOC_DIR, BM25_INDEX_PATH, CHROMA_PERSIST_DIR
+from config import DOC_DIR, BM25_INDEX_PATH, CHROMA_PERSIST_DIR  # noqa: E402
 
 _index_missing = not os.path.isfile(BM25_INDEX_PATH) or not os.path.isdir(CHROMA_PERSIST_DIR)
 
@@ -25,7 +25,7 @@ else:
     logger.info("知识库索引已就绪")
 
 # 创建 Flask 应用
-from api_server import create_app
+from api_server import create_app  # noqa: E402
 app = create_app()
 
 if __name__ == "__main__":

@@ -236,10 +236,15 @@ def evaluate(
     variant = dict(variant or {})
     channels = variant.get("channels")
     details, latencies, channel_errors = [], [], {}
-    for case in cases:
+    total_cases = len(cases)
+    for idx, case in enumerate(cases, 1):
+        if verbose:
+            print(f"  [{idx}/{total_cases}] {case.get('id', case['query'][:30])}...", end=" ", flush=True)
         started = perf_counter()
         result = retriever.search(_request(case["query"], intent_processor, max(RECALL_KS), channels))
         latency_ms = (perf_counter() - started) * 1000
+        if verbose:
+            print(f"{latency_ms:.0f}ms")
         latencies.append(latency_ms)
         candidates, ranked = _dedupe(result.candidates), _dedupe(result.documents)
         candidate_ids = [_case_id(row) for row in candidates]
@@ -366,7 +371,7 @@ def run_test_mode(retriever: HybridRetriever, intent_processor=None):
             retriever,
             intent_processor or IntentProcessor(),
             split="20",
-            variant={"name": "hybrid"},
+            variant={"name": "hybrid", "channels": ["embedding_original", "bm25_original", "exact"]},
             strict_channels=True,
         )
     except RuntimeError as exc:
