@@ -504,7 +504,7 @@
         // Controls
         newSessionBtn.disabled = !loggedIn;
         chatInput.disabled     = !loggedIn;
-        if (!loggedIn) chatInput.placeholder = '请先登录后开始咨询';
+        chatInput.placeholder  = loggedIn ? '描述您的法律问题…' : '请先登录后开始咨询';
     }
 
     function clearLoginState(msg) {
@@ -1017,13 +1017,10 @@
             }
         }
 
-        // Resize handler
+        // Resize handler — only auto-show on desktop, never close sidebar on mobile (keyboard triggers resize)
         window.addEventListener('resize', () => {
             if (window.innerWidth >= 1024) {
                 sidebar.classList.remove('-translate-x-full');
-                overlay.classList.add('hidden');
-            } else {
-                sidebar.classList.add('-translate-x-full');
                 overlay.classList.add('hidden');
             }
         });
