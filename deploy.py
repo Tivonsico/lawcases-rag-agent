@@ -58,10 +58,24 @@ LEGAL_RAG_INDEX_DIR=/opt/legal-rag/runtime/indexes
 LEGAL_RAG_DOC_DIR=/opt/legal-rag/rag_agent/data/legal_cases
 EOF""",
 
-    # 6. Create systemd service
+    # 6. Pre-build index (slow, ~5-15 min). MUST complete before gunicorn starts.
+    """echo "═════════════════════════════════════════════════════════════"
+echo "   🔨 开始重建知识库索引（首次部署，约 5-15 分钟）"
+echo "   生成向量需要调用阿里云 DashScope Embedding API..."
+echo "═════════════════════════════════════════════════════════════"
+cd /opt/legal-rag && .venv/bin/python -c "
+import sys, logging
+sys.path.insert(0, 'rag_agent')
+logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
+from init_db import build_indexes
+result = build_indexes()
+print(f'✅ 知识库重建完成：{len(result[\"chunks\"])} chunks, {result[\"vector_store\"].count()} 向量')
+" 2>&1""",
+
+    # 7. Create systemd service
     f"cat > /etc/systemd/system/legal-rag.service << 'SVCEOF'\n{SYSTEMD_SERVICE}\nSVCEOF",
 
-    # 7. Create log directory
+    # 8. Create log directory
     "mkdir -p /var/log /opt/legal-rag/runtime/indexes /opt/legal-rag/runtime/reports",
 
     # 8. Configure Nginx for /rag-agent sub-path (不动 Java 主站)
